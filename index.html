@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#6d28e8" />
+    <title>BuscaPet | Encontre, ajude, conecte</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <noscript
+      >Ative o JavaScript para usar o BuscaPet. Os dados ficam neste
+      navegador.</noscript
+    >
+    <main class="phone app-shell">
+      <section id="splash" class="screen">
+        <div class="status light">
+          <span>9:41</span>
+          <span>▮▮▮ ))) ▰</span>
+        </div>
+        <span class="decor d1">🐾</span>
+        <span class="decor d2">🐾</span>
+        <span class="decor d3">🐾</span>
+        <div class="splash-main">
+          <div class="paw-logo">🐶🐱</div>
+          <h1>BuscaPet</h1>
+          <p>Conectando pets<br />com pessoas de bom coração</p>
+        </div>
+        <div class="splash-bottom">
+          <p>Juntos por um mundo<br />com mais reencontros.</p>
+          <a class="btn lightbtn" href="#login">Começar</a>
+        </div>
+      </section>
+
+      <section id="home" class="screen app">
+        <div class="status">
+          <span>9:41</span>
+          <span>▮▮▮ ))) ▰</span>
+        </div>
+        <div class="top">
+          <a class="logo" href="#home">🐾 Busca<span>Pet</span> </a>
+          <a href="#services">♧</a>
+        </div>
+        <div class="search">
+          ⌕ <input placeholder="Buscar por endereço, pet ou região..." />
+          <a href="#services">☷</a>
+        </div>
+        <div class="chips">
+          <button class="on">Todos</button>
+          <button>Cães</button>
+          <button>Gatos</button>
+          <button>Região</button>
+        </div>
+        <div class="list">
+          <a class="pet" href="#pet">
+            <div class="photo">🐶</div>
+            <div>
+              <h3>Hex</h3>
+              <span class="tag">Golden Retriever</span>
+              <p>Idade: 7 anos</p>
+              <p>Recompensa: <b class="reward">R$ 5.000,00</b></p>
+              <p>Última vez visto: 1 semana atrás</p>
+            </div>
+            <span class="fav">♡</span>
+          </a>
+          <article class="pet">
+            <div class="photo">🐕</div>
+            <div>
+              <h3>Bold</h3>
+              <span class="tag">Vira-Lata</span>
+              <p>Idade: 3 anos</p>
+              <p>Bálsamo</p>
+              <p>Recompensa: <b class="reward">R$ 500,00</b></p>
+            </div>
+            <span class="fav">♡</span>
+          </article>
+          <article class="pet">
+            <div class="photo">🐈</div>
+            <div>
+              <h3>Gargamel</h3>
+              <span class="tag">Gato cinza</span>
+              <p>Idade: 7 anos</p>
+              <p>Centro-Oeste</p>
+              <p>Recompensa: <b class="reward">R$ 1.000,00</b></p>
+            </div>
+            <span class="fav">♡</span>
+          </article>
+        </div>
+        <nav class="nav">
+          <a class="active" href="#home"> <b>⌂</b>Início</a>
+          <a href="#map"> <b>⌖</b>Mapa</a>
+          <a class="post" href="#post"> <b>＋</b>Postar</a>
+          <a href="#home"> <b>☵</b>Mensagens</a>
+          <a href="#home"> <b>♙</b>Perfil</a>
+        </nav>
+      </section>
+      <section id="pet" class="screen">
+        <div class="hero">
+          <div class="status light">
+            <span>9:41</span>
+            <span>▮▮▮ ))) ▰</span>
+          </div>
+          <a class="circle left" href="#home">‹</a>
+          <span class="circle right">♡</span>🐶
+        </div>
+        <div class="sheet">
+          <h2>Hex</h2>
+          <div class="tags">
+            <span class="tag">Cão</span>
+            <span class="tag">Golden Retriever</span>
+            <span class="tag">7 anos</span>
+          </div>
+          <div class="detail">
+            <div>
+              <span class="ico">▣</span>
+              <p>
+                <small>Última vez visto</small>
+                <b>1 semana atrás</b>
+                <small>12 de abr. de 2024</small>
+              </p>
+            </div>
+            <div>
+              <span class="ico">⌖</span>
+              <p>
+                <small>Região</small>
+                <b>Leste</b>
+                <small>Parque das Nações, Campo Grande - MS</small>
+              </p>
+            </div>
+            <div>
+              <span class="ico">ⓢ</span>
+              <p>
+                <small>Recompensa</small>
+                <b class="reward">R$ 5.000,00</b>
+              </p>
+            </div>
+          </div>
+          <hr />
+          <h3>Descrição</h3>
+          <p class="desc">
+            Hex desapareceu no dia 12/04 próximo ao Parque das Nações. Ele é
+            muito dócil, adora pessoas e atende pelo nome. Usa uma coleira
+            vermelha com plaquinha de identificação.
+          </p>
+          <div class="help">
+            🐾 &nbsp; <b>Ajude a trazer o Hex de volta!</b>
+            <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Qualquer informação pode fazer a
+            diferença.
+          </div>
+          <a class="btn primary" href="mailto:contato@buscapet.local"
+            >Entrar em contato</a
+          >
+        </div>
+      </section>
+      <section id="map" class="screen map">
+        <div class="maparea">
+          <div class="status">
+            <span>9:41</span>
+            <span>▮▮▮ ))) ▰</span>
+          </div>
+          <div
+            class="search"
+            style="position: absolute; top: 45px; left: 0; right: 0"
+          >
+            ⌕ <input placeholder="Buscar por local, pet ou região..." />
+          </div>
+          <div class="road r1"></div>
+          <div class="road r2"></div>
+          <div class="pin a">
+            <span>🐾</span>
+          </div>
+          <div class="pin b">
+            <span>🐾</span>
+          </div>
+          <div class="pin c">
+            <span>🐾</span>
+          </div>
+          <div class="pin d">
+            <span>🐾</span>
+          </div>
+          <a class="mapcard" href="#pet">
+            <div class="mapphoto">🐶</div>
+            <div>
+              <b>Hex</b>
+              <div class="tag">Golden Retriever</div>
+              <small>◷ 1 semana atrás<br />⌖ Região Leste</small>
+            </div>
+            <span>♡</span>
+          </a>
+        </div>
+        <nav class="nav">
+          <a href="#home"> <b>⌂</b>Início</a>
+          <a class="active" href="#map"> <b>⌖</b>Mapa</a>
+          <a class="post" href="#post"> <b>＋</b>Postar</a>
+          <a href="#home"> <b>☵</b>Mensagens</a>
+          <a href="#home"> <b>♙</b>Perfil</a>
+        </nav>
+      </section>
+      <section id="services" class="screen app services">
+        <div class="status">
+          <span>9:41</span>
+          <span>▮▮▮ ))) ▰</span>
+        </div>
+        <div class="top">
+          <a class="logo" href="#home">🐾 Busca<span>Pet</span> </a>
+          <span>♧</span>
+        </div>
+        <div class="search">
+          ⌕ <input placeholder="Buscar clínica, pet shop..." />
+          <span>☷</span>
+        </div>
+        <div class="chips">
+          <button class="on">Todos</button>
+          <button>Veterinária</button>
+          <button>Pet Shop</button>
+          <button>Banho e Tosa</button>
+        </div>
+        <div class="list">
+          <a class="service" href="#clinic">
+            <div class="servicepic">🏥</div>
+            <div>
+              <h3>UniVet Clínica Veterinária</h3>
+              <p>⌖ R. Sete de Setembro, 2213 - Centro<br />Campo Grande - MS</p>
+              <p>💉 Vacinação &nbsp; ◉ Ração &nbsp; ✂ Tosa</p>
+            </div>
+            <b>›</b>
+          </a>
+          <article class="service">
+            <div class="servicepic">🛍️</div>
+            <div>
+              <h3>Pet Shop Anjos de Quatro Patas</h3>
+              <p>⌖ Centro, Campo Grande - MS</p>
+              <p>◉ Ração &nbsp; ⌁ Acessórios &nbsp; ✂ Banho e Tosa</p>
+            </div>
+            <b>›</b>
+          </article>
+          <article class="service">
+            <div class="servicepic">🐾</div>
+            <div>
+              <h3>Vet Intensive</h3>
+              <p>⌖ Vila Taveirópolis, Campo Grande - MS</p>
+              <p>💉 Vacinação &nbsp; ♡ Exames</p>
+            </div>
+            <b>›</b>
+          </article>
+          <article class="service">
+            <div class="servicepic">✂️</div>
+            <div>
+              <h3>AuQmia Banho e Tosa</h3>
+              <p>⌖ Jardim dos Estados</p>
+              <p>✂ Banho e Tosa &nbsp; ♡ Estética</p>
+            </div>
+            <b>›</b>
+          </article>
+        </div>
+        <nav class="nav">
+          <a class="active" href="#home"> <b>⌂</b>Início</a>
+          <a href="#map"> <b>⌖</b>Mapa</a>
+          <a class="post" href="#post"> <b>＋</b>Postar</a>
+          <a href="#home"> <b>☵</b>Mensagens</a>
+          <a href="#home"> <b>♙</b>Perfil</a>
+        </nav>
+      </section>
+      <section id="clinic" class="screen clinic">
+        <div class="clinichero">
+          <div class="status light">
+            <span>9:41</span>
+            <span>▮▮▮ ))) ▰</span>
+          </div>
+          <a class="circle left" href="#services">‹</a>
+          <span class="circle right">♡</span>🏥
+        </div>
+        <div class="sheet">
+          <h2>UniVet Clínica Veterinária</h2>
+          <p class="desc">
+            ⌖ R. Sete de Setembro, 2213 - Centro<br />Campo Grande - MS,
+            79020-310
+          </p>
+          <div class="serviceicons">
+            <div>💉<small>Vacinação</small></div>
+            <div>◉<small>Ração</small></div>
+            <div>🛒<small>Acessórios</small></div>
+            <div>♧<small>Cirurgia</small></div>
+            <div>✂<small>Tosa</small></div>
+          </div>
+          <div class="clinicrows">
+            <div>
+              ◷
+              <p>
+                <b>Horário de funcionamento</b>
+                <br />Segunda a Sexta — 7:30 - 19:30
+              </p>
+              ›
+            </div>
+            <div>
+              ☎
+              <p>
+                <b>Contato</b>
+                <br />(67) 3222-7840
+              </p>
+              ›
+            </div>
+            <div>
+              ◎
+              <p>
+                <b>Instagram</b>
+                <br />@univetcg
+              </p>
+              ›
+            </div>
+          </div>
+          <a class="btn primary" href="#map" style="margin-top: 18px"
+            >➤ &nbsp; Como chegar</a
+          >
+        </div>
+      </section>
+      <section id="post" class="screen auth">
+        <div class="status">
+          <span>9:41</span>
+          <span>▮▮▮ ))) ▰</span>
+        </div>
+        <a class="back" href="#home">‹</a>
+        <div class="brand" style="margin-top: 75px">
+          <div class="paw">🐾</div>
+        </div>
+        <div class="copy">
+          <h2>Encontrou ou perdeu<br />um pet?</h2>
+          <p>Faça uma postagem e ajude a comunidade</p>
+        </div>
+        <div class="choices">
+          <a class="choice" href="#home">
+            <div class="choiceicon">🐾</div>
+            <div>
+              <h3>Perdi meu pet</h3>
+              <p>Publique informações sobre<br />seu pet desaparecido</p>
+            </div>
+            <b>›</b>
+          </a>
+          <a class="choice" href="#home">
+            <div class="choiceicon" style="background: #fff0f2; color: #ed5361">
+              ♥
+            </div>
+            <div>
+              <h3>Encontrei um pet</h3>
+              <p>Ajude a encontrar o tutor</p>
+            </div>
+            <b>›</b>
+          </a>
+        </div>
+        <div class="illustration" style="height: 250px">🐶 🐱</div>
+      </section>
+    </main>
+  </body>
+</html>
