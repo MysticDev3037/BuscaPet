@@ -20,17 +20,19 @@ CSS Grid organiza o catálogo e os formulários. As media queries em 699, 1023 e
 
 Existe uma única navegação principal. O CSS a posiciona no cabeçalho ou no rodapé conforme o tamanho da tela. O JavaScript acrescenta rótulos às células das tabelas para que elas permaneçam compreensíveis quando empilhadas no celular. `viewport-fit=cover` e `safe-area-inset-bottom` reservam espaço para a área inferior do dispositivo.
 
-Os alertas de exemplo usam fotos da pasta `assets`. Fotos novas continuam com a conversão e persistência locais já descritas. A versão de arquivo único distribuída separadamente incorpora CSS, JavaScript e imagens para facilitar a abertura.
+Os alertas de exemplo usam fotos da pasta `assets`. Fotos novas continuam com a conversão e persistência locais já descritas. O mapa interativo posiciona alertas e avistamentos em regiões ilustrativas a partir do bairro informado; não usa coordenadas reais ou um provedor de mapas. Atualizações salvas em outra aba da mesma origem são refletidas pelo evento `storage`; não há sincronização entre dispositivos. A versão de arquivo único distribuída separadamente incorpora CSS, JavaScript e imagens para facilitar a abertura.
 
 ## Estruturas atuais
 
 | Coleção | Campos e papel |
 |---|---|
 | `profile` | Nome fictício, versão e data do aceite |
-| `accounts` | Dois perfis locais e flag de suspensão |
+| `accounts` | Contas locais de demonstração, papel, credenciais simuladas, aceite individual e flag de suspensão |
 | `alerts` | Autor, animal, tipo, local, data, descrição, foto e situação |
 | `sightings` | Referência ao alerta, autor local, local, momento e observação |
 | `reports` | Alerta, denunciante, motivo, estado, decisão e contestação |
+| `chatMessages` | Remetente, destinatário, texto, anexo limitado a 500 KB e data; mensagens somente locais |
+| `chatPresence` | Estado online/offline simulado por conta neste navegador |
 | `audit` | Ação, ator, alvo, justificativa e data |
 | `favorites` | Identificadores dos alertas favoritos neste navegador |
 
@@ -48,6 +50,7 @@ O fluxo de denúncia utiliza pendente, em análise, concluída e em revisão. Um
 - Denúncias repetidas em andamento do mesmo perfil são recusadas.
 - Decisões e medidas sobre contas exigem justificativa.
 - Campos de texto são escapados antes de inserção no HTML.
+- O chat valida o tipo e tamanho de anexos e guarda mensagens e anexos apenas no armazenamento local; presença e envio não são em tempo real.
 
 Essas verificações são regras locais. Elas não representam uma fronteira de segurança: o usuário pode alterar qualquer dado do navegador.
 
@@ -65,5 +68,6 @@ Isso é uma proposta para discussão, não um banco implementado. A definição 
 4. Implementar login, sessões e autorização em cada operação.
 5. Armazenar fotos em serviço apropriado, com validação e controle de acesso.
 6. Proteger registros administrativos, retenção e cópias de segurança.
-7. Integrar mapa real, avaliar geolocalização opcional e compartilhamento.
+7. Substituir o mapa ilustrativo por um provedor real, com coordenadas aproximadas opcionais, backend compartilhado e atualização autenticada de avistamentos.
 8. Testar com usuários e revisar acessibilidade, segurança e tratamento de incidentes.
+9. Para comunicação real, implementar entrega autenticada de mensagens e anexos, presença em tempo real, controles de abuso, retenção e exclusão.
