@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BuscaPet | Favoritos</title>
+  <link rel="stylesheet" href="style.css" />
+  
+  <style>
+    /* Estilo do botão flutuante de acessibilidade */
+    .btn-acessibilidade {
+      position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px;
+      border-radius: 50%; background: var(--p); color: white; border: none;
+      cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; transition: transform 0.2s;
+    }
+    .btn-acessibilidade:hover { transform: scale(1.1); }
+    .menu-acessibilidade {
+      position: fixed; bottom: 95px; right: 30px; background: white;
+      border: 1px solid var(--line); border-radius: 16px; padding: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none;
+      flex-direction: column; gap: 8px; z-index: 999; width: 200px;
+    }
+    .menu-acessibilidade.aberto { display: flex; }
+    .menu-acessibilidade h4 { margin: 0 0 5px 0; font-size: 14px; color: #666; text-align: center; }
+    .menu-acessibilidade button {
+      background: #f4f4f8; border: none; padding: 10px; border-radius: 8px;
+      cursor: pointer; font-weight: bold; color: var(--ink); text-align: left;
+    }
+    .menu-acessibilidade button:hover { background: #e0d4fc; }
+  </style>
+</head>
+<body>
+  <main class="phone app-shell">
+    
+    <header class="app-header">
+      <a class="logo" href="index.html" aria-label="BuscaPet, início">
+        <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="6" cy="8" rx="2" ry="2.7"/><ellipse cx="11" cy="5" rx="2" ry="2.7"/><ellipse cx="17" cy="6" rx="2" ry="2.7"/><ellipse cx="20" cy="11" rx="1.8" ry="2.5"/><path d="M5 18c0-3 4-7 7-7s7 4 7 7c0 5-5 1-7 1s-7 4-7-1Z"/></svg>
+        <span class="wordmark">Busca<strong>Pet</strong></span>
+      </a>
+      <nav class="main-nav">
+        <a href="index.html">Início</a>
+        <a href="mapa.html">Mapa</a>
+        <a href="cadastro.html" class="post-link">+ Publicar</a>
+        <a href="favoritos.html" class="active">Favoritos</a>
+        <a href="minha-area.html">Minha Área</a>
+      </nav>
+    </header>
+
+    <div class="page">
+      <div class="page-title">
+        <div>
+          <p class="eyebrow">Sua lista pessoal</p>
+          <h1>Meus Favoritos</h1>
+          <p class="intro">Alertas que você salvou para acompanhar.</p>
+        </div>
+      </div>
+      
+      <div id="lista-favoritos" class="list alert-grid">
+        <p>Carregando favoritos...</p>
+      </div>
+    </div>
+
+    <!-- BOTÃO DE ACESSIBILIDADE -->
+    <button class="btn-acessibilidade" id="btn-acessibilidade" aria-label="Abrir menu de acessibilidade">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
+    </button>
+    <div class="menu-acessibilidade" id="menu-acessibilidade">
+      <h4>Acessibilidade</h4>
+      <button type="button" data-action="text-size" data-value="smaller">A− Diminuir texto</button>
+      <button type="button" data-action="text-size" data-value="larger">A+ Aumentar texto</button>
+      <button type="button" data-action="contrast">◐ Alto contraste</button>
+    </div>
+
+  </main>
+
+  <script>
+    // Lógica de Acessibilidade
+    const btnAcess = document.getElementById('btn-acessibilidade');
+    const menuAcess = document.getElementById('menu-acessibilidade');
+    if (btnAcess && menuAcess) {
+      btnAcess.addEventListener('click', () => menuAcess.classList.toggle('aberto'));
+      document.addEventListener('click', (e) => {
+        if (!btnAcess.contains(e.target) && !menuAcess.contains(e.target)) menuAcess.classList.remove('aberto');
+      });
+      menuAcess.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const action = btn.dataset.action;
+          const value = btn.dataset.value;
+          if (action === 'text-size') {
+            if (value === 'larger') {
+              document.documentElement.classList.remove('a11y-small-text');
+              document.documentElement.classList.toggle('a11y-large-text');
+            } else {
+              document.documentElement.classList.remove('a11y-large-text');
+              document.documentElement.classList.toggle('a11y-small-text');
+            }
+          } else if (action === 'contrast') {
+            const enabled = document.documentElement.classList.toggle('a11y-high-contrast');
+            btn.setAttribute('aria-pressed', String(enabled));
+          }
+        });
+      });
+    }
+
+    // Lógica dos Favoritos
+    document.addEventListener('DOMContentLoaded', async () => {
+      const usuarioString = localStorage.getItem('usuarioLogado');
+      const lista = document.getElementById('lista-favoritos');
+
+      if (!usuarioString) {
+        lista.innerHTML = '<p style="grid-column:1/-1; padding:20px;">Faça login para ver seus favoritos.</p>';
+        return;
+      }
+
+      const usuario = JSON.parse(usuarioString);
+
+      try {
+        const resFav = await fetch(`/api/favoritos/${usuario.id}`);
+        const idsFavoritos = await resFav.json();
+
+        if (idsFavoritos.length === 0) {
+          lista.innerHTML = '<div class="empty" style="grid-column:1/-1;"><h2>Você ainda não tem favoritos</h2><p>Abra um alerta e clique em "Salvar favorito".</p></div>';
+          return;
+        }
+
+        const resPets = await fetch('/api/pets');
+        const todosPets = await resPets.json();
+        const petsFavoritos = todosPets.filter(p => idsFavoritos.includes(p.id));
+
+        lista.innerHTML = '';
+
+        petsFavoritos.forEach(pet => {
+          const emoji = pet.especie === 'gato' ? '🐈' : (pet.especie === 'cão' ? '🐶' : '🐾');
+          const fotoHtml = pet.foto_url 
+            ? `<img src="${pet.foto_url}" style="width:100%; height:100%; object-fit:cover;">` 
+            : emoji;
+          const recompensa = pet.recompensa > 0 ? `R$ ${Number(pet.recompensa).toFixed(2).replace('.', ',')}` : 'Sem recompensa';
+
+          const card = document.createElement('article');
+          card.className = 'pet';
+          card.innerHTML = `
+            <div class="photo">${fotoHtml}</div>
+            <div class="pet-body">
+              <div class="card-tags"><span class="tag ${pet.status === 'encontrado' ? 'found' : ''}">${pet.status === 'encontrado' ? 'Pet encontrado' : 'Pet perdido'}</span></div>
+              <h3>${pet.nome}</h3>
+              <p class="pet-description">${pet.raca || pet.especie}</p>
+              <p class="pet-location">📍 ${pet.regiao}, Campo Grande - MS</p>
+              <div class="card-bottom"><span>Hoje</span><strong>${recompensa}</strong></div>
+            </div>
+            <a class="card-link" href="detalhe.html?id=${pet.id}"></a>
+          `;
+          lista.appendChild(card);
+        });
+
+      } catch (err) {
+        console.error(err);
+        lista.innerHTML = '<p style="grid-column:1/-1;">Erro ao carregar favoritos.</p>';
+      }
+    });
+  </script>
+</body>
+</html>

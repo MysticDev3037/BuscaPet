@@ -1,0 +1,26 @@
+{
+  "name": "buscapet",
+  "version": "1.0.0",
+  "description": "Protótipo funcional do Projeto Integrador de Análise e Desenvolvimento de Sistemas.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MysticDev3037/BuscaPet.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/MysticDev3037/BuscaPet/issues"
+  },
+  "homepage": "https://github.com/MysticDev3037/BuscaPet#readme",
+  "dependencies": {
+    "express": "^5.3.0",
+    "pg": "^8.23.1"
+  }
+}

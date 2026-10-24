@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BuscaPet | Detalhes do Pet</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .btn-whatsapp {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 15px; border-radius: 12px;
+      background: #25D366; color: #fff; font-size: 16px; font-weight: 800;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: 0.2s; margin-top: 20px;
+    }
+    .btn-whatsapp:hover { background: #1eb956; }
+    
+    .detail div { align-items: flex-start; }
+    .detail p { margin: 0; line-height: 1.4; }
+    .detail small { display: block; font-size: 12px; color: #777a9d; margin-bottom: 2px; }
+    .detail b { display: block; font-size: 15px; color: var(--ink); margin-bottom: 2px; }
+
+    .desc {
+      background: #fff; border: 1px solid var(--line); border-radius: 12px;
+      padding: 20px; font-size: 15px; line-height: 1.6; color: #444;
+      margin-top: 10px; margin-bottom: 20px; white-space: pre-wrap;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    
+    /* Estilo do botão favorito ativo */
+    .btn-favorito.ativo {
+      background: #fff0f2;
+      color: #e11d48;
+      border-color: #e11d48;
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+  <main class="phone app-shell">
+    
+    <a class="skip-link" href="#home">Pular para o conteúdo</a>
+    <header class="app-header">
+      <a class="logo" href="index.html" aria-label="BuscaPet, início">
+        <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="6" cy="8" rx="2" ry="2.7"/><ellipse cx="11" cy="5" rx="2" ry="2.7"/><ellipse cx="17" cy="6" rx="2" ry="2.7"/><ellipse cx="20" cy="11" rx="1.8" ry="2.5"/><path d="M5 18c0-3 4-7 7-7s7 4 7 7c0 5-5 1-7 1s-7 4-7-1Z"/></svg>
+        <span class="wordmark">Busca<strong>Pet</strong></span>
+      </a>
+      <nav class="main-nav" aria-label="Navegação principal">
+        <a href="index.html"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></svg>Início</a>
+        <a href="mapa.html"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2Z"/><path d="M9 3v16M15 5v16"/></svg>Mapa</a>
+        <a href="cadastro.html" class="post-link"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Publicar</a>
+        <a href="favoritos.html"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.8 4.7a5.4 5.4 0 0 0-7.6 0L12 5.9l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.7a5.4 5.4 0 0 0 0-7.6Z"/></svg>Favoritos</a>
+        <a href="minha-area.html"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2Z"/></svg>Minha área</a>
+      </nav>
+    </header>
+
+    <div class="page" id="conteudo-pet">
+      <p style="padding: 50px; text-align:center;">Carregando informações...</p>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const params = new URLSearchParams(window.location.search);
+      const petId = params.get('id');
+      const divConteudo = document.getElementById('conteudo-pet');
+
+      const usuarioString = localStorage.getItem('usuarioLogado');
+      const usuario = usuarioString ? JSON.parse(usuarioString) : null;
+
+      if (!petId) {
+        divConteudo.innerHTML = '<h1>Pet não encontrado</h1><a href="index.html" class="btn primary">Voltar para a Home</a>';
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/pets/${petId}`);
+        if (!response.ok) throw new Error('Pet não encontrado');
+        const pet = await response.json();
+        
+        // Verifica se está favoritado
+        let favoritado = false;
+        if (usuario) {
+          const resFav = await fetch(`/api/favoritos/${usuario.id}`);
+          const lista = await resFav.json();
+          favoritado = lista.includes(parseInt(petId));
+        }
+        
+        const emoji = pet.especie === 'gato' ? '🐈' : (pet.especie === 'cão' ? '🐶' : '🐾');
+        const fotoHtml = pet.foto_url 
+          ? `<img src="${pet.foto_url}" alt="${pet.nome}" style="width:100%; height:100%; object-fit:cover;">` 
+          : emoji;
+        const recompensa = pet.recompensa > 0 ? `R$ ${Number(pet.recompensa).toFixed(2).replace('.', ',')}` : 'Sem recompensa';
+        const tagStatus = pet.status === 'encontrado' ? 'Pet encontrado' : 'Pet perdido';
+        const dataAtual = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+
+        // Botão de WhatsApp
+        let botaoContato = '';
+        const numeroContato = pet.contato || pet.tutor_telefone;
+        if (numeroContato) {
+          const numeroLimpo = numeroContato.replace(/\D/g, '');
+          const numeroWpp = `55${numeroLimpo}`;
+          const msg = encodeURIComponent(`Olá! Vi o alerta do ${pet.nome} no BuscaPet e gostaria de falar com você.`);
+          botaoContato = `
+            <a href="https://wa.me/${numeroWpp}?text=${msg}" target="_blank" class="btn-whatsapp">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+              Chamar no WhatsApp
+            </a>
+          `;
+        } else {
+          botaoContato = `<button class="btn primary" style="width:100%; margin-top: 20px; background:#ccc;" disabled>Contato não informado pelo tutor</button>`;
+        }
+
+        // Botão de Favorito
+        const textoFav = favoritado ? '♥ Favoritado' : '♡ Salvar favorito';
+        const classeFav = favoritado ? 'btn secondary btn-favorito ativo' : 'btn secondary btn-favorito';
+
+        divConteudo.innerHTML = `
+          <a class="back-link" href="index.html">‹ Voltar aos alertas</a>
+          
+          <div class="detail-layout">
+            <div>
+              <div class="detail-photo">${fotoHtml}</div>
+              <div class="actions">
+                <button id="btn-favorito" class="${classeFav}" style="width:100%;">${textoFav}</button>
+              </div>
+              <p class="hint" style="margin-top: 10px;">Este animal e este alerta são criados pela comunidade.</p>
+            </div>
+            
+            <div>
+              <div class="fact-line">
+                <span class="tag ${pet.status === 'encontrado' ? 'found' : ''}">${tagStatus}</span>
+                <span class="tag">Em busca</span>
+              </div>
+              <h1>${pet.nome}</h1>
+              <div class="tags">
+                <span class="tag">${pet.especie === 'cao' || pet.especie === 'cão' ? 'Cão' : 'Gato'}</span>
+                <span class="tag">${pet.raca || 'Raça não informada'}</span>
+                ${pet.idade ? `<span class="tag">${pet.idade} anos</span>` : ''}
+              </div>
+              <div class="detail">
+                <div>
+                  <span class="ico">📍</span>
+                  <p>
+                    <small>Local aproximado</small>
+                    <b>${pet.regiao || 'Não informado'} · ${pet.cidade || 'Campo Grande - MS'}</b>
+                  </p>
+                </div>
+                <div>
+                  <span class="ico">📅</span>
+                  <p>
+                    <small>Última vez visto</small>
+                    <b>${dataAtual}</b>
+                  </p>
+                </div>
+                <div>
+                  <span class="ico">💰</span>
+                  <p>
+                    <small>Recompensa informada pelo autor</small>
+                    <b>${recompensa}</b>
+                  </p>
+                </div>
+              </div>
+              <h2 class="section-heading">Características e informações</h2>
+              <p class="desc">${pet.descricao || 'O tutor não deixou uma descrição detalhada.'}</p>
+              ${botaoContato}
+            </div>
+          </div>
+        `;
+
+        // Lógica do clique no botão de favorito
+        document.getElementById('btn-favorito').addEventListener('click', async () => {
+          if (!usuario) {
+            alert('Você precisa estar logado para favoritar um pet.');
+            window.location.href = 'login.html';
+            return;
+          }
+
+          try {
+            const res = await fetch('/api/favoritos', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ usuario_id: usuario.id, pet_id: parseInt(petId) })
+            });
+
+            const data = await res.json();
+            const btn = document.getElementById('btn-favorito');
+
+            if (data.acao === 'adicionado') {
+              btn.textContent = '♥ Favoritado';
+              btn.classList.add('ativo');
+            } else if (data.acao === 'removido') {
+              btn.textContent = '♡ Salvar favorito';
+              btn.classList.remove('ativo');
+            }
+          } catch (err) {
+            console.error(err);
+            alert('Erro ao favoritar.');
+          }
+        });
+
+      } catch (error) {
+        console.error(error);
+        divConteudo.innerHTML = `
+          <div style="text-align:center; padding: 50px;">
+            <h1>Erro ao carregar</h1>
+            <p>Não foi possível encontrar este pet.</p>
+            <a href="index.html" class="btn primary">Voltar para a Home</a>
+          </div>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>

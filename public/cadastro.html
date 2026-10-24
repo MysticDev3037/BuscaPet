@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BuscaPet | Publicar Pet</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .foto-preview { width: 120px; height: 120px; border-radius: 12px; object-fit: cover; background: #eee; border: 2px solid var(--line); display: none; margin-top: 10px;}
+    .foto-preview.show { display: block; }
+  </style>
+</head>
+<body>
+  <main class="phone app-shell">
+    
+    <header class="app-header">
+      <a class="logo" href="index.html">🐾 Busca<strong>Pet</strong></a>
+      <nav class="main-nav">
+        <a href="index.html">Início</a>
+        <a href="mapa.html">Mapa</a>
+        <a href="cadastro.html" class="post-link active">+ Publicar</a>
+        <a href="minha-area.html">Minha Área</a>
+      </nav>
+    </header>
+
+    <div class="page narrow form-page">
+      <a href="index.html" class="back-link">‹ Voltar</a>
+      <h1>Publicar um Alerta</h1>
+      <p class="intro">Preencha os dados do pet abaixo.</p>
+
+      <form id="form-pet" class="form">
+        <div class="form-grid">
+          <label>Nome do Pet *<input class="control" type="text" id="nome" required></label>
+          <label>Espécie *
+            <select class="control" id="especie" required>
+              <option value="cão">Cão</option>
+              <option value="gato">Gato</option>
+              <option value="outro">Outro</option>
+            </select>
+          </label>
+          <label>Raça<input class="control" type="text" id="raca"></label>
+          <label>Idade<input class="control" type="number" id="idade"></label>
+          <label>Cidade *
+  <input class="control" type="text" id="cidade" value="Campo Grande - MS" readonly style="background-color: #f0f0f0; cursor: not-allowed;">
+</label>
+<label>Contato para WhatsApp (opcional)
+            <input class="control" type="tel" id="contato" placeholder="(67) 99999-9999">
+          </label>
+          <label>Região/Bairro *<input class="control" type="text" id="regiao" required></label>
+          <label>Recompensa (R$)<input class="control" type="number" id="recompensa" step="0.01"></label>
+          <label>Status
+            <select class="control" id="status">
+              <option value="perdido">Perdido</option>
+              <option value="encontrado">Encontrado</option>
+            </select>
+          </label>
+          
+          <!-- Campo de Foto Adicionado -->
+          <label class="full">Foto do Pet (opcional)
+            <input class="control" type="file" id="foto-input" accept="image/*">
+            <img id="foto-preview" class="foto-preview" alt="Prévia da foto">
+            <span class="hint">JPG, PNG ou WebP, até 2MB.</span>
+          </label>
+
+          <label class="full">Descrição *<textarea class="control" id="descricao" required></textarea></label>
+        </div>
+        
+        <div class="actions">
+          <button type="submit" class="btn primary">Publicar Alerta</button>
+          <a href="index.html" class="btn secondary">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    let fotoBase64 = "";
+
+    // Lógica da foto com proteção
+    document.getElementById('foto-input').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (file.size > 2 * 1024 * 1024) {
+        alert('A foto é muito grande. Escolha uma imagem de até 2MB.');
+        e.target.value = '';
+        return;
+      }
+
+      const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!tiposPermitidos.includes(file.type)) {
+        alert('Formato inválido. Envie apenas JPG, PNG ou WebP.');
+        e.target.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        fotoBase64 = event.target.result;
+        const preview = document.getElementById('foto-preview');
+        preview.src = fotoBase64;
+        preview.classList.add('show');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Envio do formulário
+    document.getElementById('form-pet').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const usuarioString = localStorage.getItem('usuarioLogado');
+      if (!usuarioString) {
+        alert('Você precisa estar logado para publicar um alerta!');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const usuarioLogado = JSON.parse(usuarioString);
+
+      const novoPet = {
+        nome: document.getElementById('nome').value,
+        especie: document.getElementById('especie').value,
+        raca: document.getElementById('raca').value,
+        idade: document.getElementById('idade').value,
+        cidade: document.getElementById('cidade').value,
+        regiao: document.getElementById('regiao').value,
+        recompensa: parseFloat(document.getElementById('recompensa').value) || 0,
+        descricao: document.getElementById('descricao').value,
+        status: document.getElementById('status').value,
+        foto_url: fotoBase64, // Envia a imagem
+        usuario_id: usuarioLogado.id
+      };
+
+      try {
+        const response = await fetch('/api/pets', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(novoPet)
+        });
+
+        if (response.ok) {
+          alert('Pet publicado com sucesso!');
+          window.location.href = 'index.html';
+        } else {
+          alert('Erro ao publicar pet.');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Erro de conexão.');
+      }
+    });
+
+          const novoPet = {
+        // ... outros campos ...
+        recompensa: parseFloat(document.getElementById('recompensa').value) || 0,
+        contato: document.getElementById('contato').value, // <-- NOVO CAMPO AQUI
+        descricao: document.getElementById('descricao').value,
+        // ...
+      };
+  </script>
+</body>
+</html>

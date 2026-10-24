@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BuscaPet | Minha Área</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="phone app-shell">
+    
+    <!-- Cabeçalho Padronizado -->
+    <header class="app-header">
+      <a class="logo" href="index.html" aria-label="BuscaPet, início">
+        <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="6" cy="8" rx="2" ry="2.7"/><ellipse cx="11" cy="5" rx="2" ry="2.7"/><ellipse cx="17" cy="6" rx="2" ry="2.7"/><ellipse cx="20" cy="11" rx="1.8" ry="2.5"/><path d="M5 18c0-3 4-7 7-7s7 4 7 7c0 5-5 1-7 1s-7 4-7-1Z"/></svg>
+        <span class="wordmark">Busca<strong>Pet</strong></span>
+      </a>
+      <nav class="main-nav">
+        <a href="index.html">Início</a>
+        <a href="mapa.html">Mapa</a>
+        <a href="cadastro.html" class="post-link">+ Publicar</a>
+        <a href="favoritos.html">Favoritos</a>
+        <a href="login.html" class="active">Minha Área</a>
+      </nav>
+    </header>
+
+    <div class="page login-page">
+      <section class="login-panel">
+        <h1>Minha área</h1>
+        <p class="intro">Faça login para acessar os perfis do sistema.</p>
+
+        <form id="form-login" class="form login-form">
+          <div class="notice warn">
+            Acesso por e-mail e senha. Use os dados que você cadastrou.
+          </div>
+
+          <label>E-mail
+            <input class="control" type="email" id="email-login" required placeholder="seuemail@exemplo.com">
+          </label>
+          <label>Senha
+            <input class="control" type="password" id="senha-login" required placeholder="Digite sua senha">
+          </label>
+
+          <div class="actions">
+            <button type="submit" class="btn primary">Entrar</button>
+          </div>
+          
+          <div class="login-signup">
+            <span>Ainda não tem acesso?</span>
+            <a href="cadastro-usuario.html" class="btn secondary">Sou novo, quero me cadastrar</a>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('form-login').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email-login').value;
+      const senha = document.getElementById('senha-login').value;
+
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, senha })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Salva o usuário no navegador
+          localStorage.setItem('usuarioLogado', JSON.stringify(data));
+          alert(`Bem-vindo(a), ${data.nome}!`);
+          
+          // CORREÇÃO: Redireciona para a Minha Área em vez da Home
+          window.location.href = 'minha-area.html'; 
+        } else {
+          alert(data.erro || 'E-mail ou senha incorretos.');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Erro de conexão.');
+      }
+    });
+  </script>
+</body>
+</html>

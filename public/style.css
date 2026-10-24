@@ -4391,3 +4391,71 @@ html.a11y-high-contrast textarea {
     flex-direction: column;
   }
 }
+
+/* Garante que a mensagem de senha esteja sempre visível */
+#senha-forca {
+  display: block !important;
+}
+
+    /* Estilo do botão flutuante de acessibilidade */
+    .btn-acessibilidade {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      background: var(--p); /* Cor roxa do seu projeto */
+      color: white;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: transform 0.2s;
+    }
+    .btn-acessibilidade:hover {
+      transform: scale(1.1);
+    }
+
+    /* Estilo do menu que abre */
+    .menu-acessibilidade {
+      position: fixed;
+      bottom: 95px;
+      right: 30px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      display: none; /* Escondido por padrão */
+      flex-direction: column;
+      gap: 8px;
+      z-index: 999;
+      width: 200px;
+    }
+    .menu-acessibilidade.aberto {
+      display: flex; /* Mostra quando tem a classe 'aberto' */
+    }
+    .menu-acessibilidade h4 {
+      margin: 0 0 5px 0;
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+    }
+    .menu-acessibilidade button {
+      background: #f4f4f8;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      color: var(--ink);
+      text-align: left;
+      transition: background 0.2s;
+    }
+    .menu-acessibilidade button:hover {
+      background: #e0d4fc;
+    }

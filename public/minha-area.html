@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BuscaPet | Minha Área</title>
+  <link rel="stylesheet" href="style.css" />
+  
+  <style>
+    /* Estilo para as abas não aparecerem todas de uma vez */
+    .aba-conteudo { display: none; }
+    .aba-conteudo.ativa { display: block; }
+    
+    .perfil-foto-wrapper { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
+    .perfil-foto-preview {
+      width: 100px; height: 100px; border-radius: 50%; object-fit: cover;
+      background: #eee; border: 2px solid var(--p); display: grid; place-items: center;
+      font-size: 40px; color: var(--p);
+    }
+    
+    /* Estilo para as abas de Termos e Privacidade */
+    .legal-box {
+      background: #fff; border: 1px solid var(--line); padding: 25px;
+      border-radius: 16px; max-width: 800px; margin-top: 20px;
+    }
+    .legal-box h1 { font-size: 28px; margin-bottom: 20px; }
+    .legal-box h2 { font-size: 18px; margin-top: 25px; margin-bottom: 10px; color: var(--ink); }
+    .legal-box p, .legal-box li { font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 10px; }
+    .legal-box ul { padding-left: 20px; }
+    
+    /* Estilo para Conversas e Denúncias */
+    .em-breve-box {
+      text-align: center; padding: 60px 20px; background: #f9f9ff;
+      border: 1px dashed var(--line); border-radius: 16px;
+    }
+    .em-breve-box h2 { color: var(--ink); margin-bottom: 10px; }
+    .em-breve-box p { color: #777; }
+
+    /* Estilo do botão flutuante de acessibilidade */
+    .btn-acessibilidade {
+      position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px;
+      border-radius: 50%; background: var(--p); color: white; border: none;
+      cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; transition: transform 0.2s;
+    }
+    .btn-acessibilidade:hover { transform: scale(1.1); }
+    .menu-acessibilidade {
+      position: fixed; bottom: 95px; right: 30px; background: white;
+      border: 1px solid var(--line); border-radius: 16px; padding: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none;
+      flex-direction: column; gap: 8px; z-index: 999; width: 200px;
+    }
+    .menu-acessibilidade.aberto { display: flex; }
+    .menu-acessibilidade h4 { margin: 0 0 5px 0; font-size: 14px; color: #666; text-align: center; }
+    .menu-acessibilidade button {
+      background: #f4f4f8; border: none; padding: 10px; border-radius: 8px;
+      cursor: pointer; font-weight: bold; color: var(--ink); text-align: left;
+    }
+    .menu-acessibilidade button:hover { background: #e0d4fc; }
+  </style>
+</head>
+<body>
+  <main class="phone app-shell">
+    
+    <!-- Cabeçalho -->
+    <header class="app-header">
+      <a class="logo" href="index.html" aria-label="BuscaPet, início">
+        <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="6" cy="8" rx="2" ry="2.7"/><ellipse cx="11" cy="5" rx="2" ry="2.7"/><ellipse cx="17" cy="6" rx="2" ry="2.7"/><ellipse cx="20" cy="11" rx="1.8" ry="2.5"/><path d="M5 18c0-3 4-7 7-7s7 4 7 7c0 5-5 1-7 1s-7 4-7-1Z"/></svg>
+        <span class="wordmark">Busca<strong>Pet</strong></span>
+      </a>
+      <nav class="main-nav">
+        <a href="index.html">Início</a>
+        <a href="mapa.html">Mapa</a>
+        <a href="cadastro.html" class="post-link">+ Publicar</a>
+        <a href="favoritos.html">Favoritos</a>
+        <a href="minha-area.html" class="active">Minha Área</a>
+      </nav>
+    </header>
+
+    <div class="page profile-dashboard">
+      <div class="dashboard-layout">
+        
+        <!-- MENU LATERAL -->
+        <aside class="profile-sidebar">
+          <div class="sidebar-heading">
+            <h2>Menu</h2>
+          </div>
+          
+          <div class="sidebar-identity">
+            <span class="sidebar-avatar" id="avatar-usuario">L</span>
+            <div>
+              <b id="nome-usuario">Carregando...</b>
+              <span id="role-usuario">Tutor do pet</span>
+            </div>
+          </div>
+          
+          <nav class="profile-shortcuts">
+            <a class="profile-shortcut active" href="#" data-target="aba-panorama">
+              <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="11" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/></svg>
+              <span class="menu-label">Panorama</span>
+            </a>
+            <a class="profile-shortcut" href="cadastro.html">
+              <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>
+              <span class="menu-label">Publicar alerta</span>
+            </a>
+            <a class="profile-shortcut" href="#" data-target="aba-alertas">
+              <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><ellipse cx="6" cy="8" rx="2" ry="2.7"/><ellipse cx="11" cy="5" rx="2" ry="2.7"/><ellipse cx="17" cy="6" rx="2" ry="2.7"/><ellipse cx="20" cy="11" rx="1.8" ry="2.5"/><path d="M5 18c0-3 4-7 7-7s7 4 7 7c0 5-5 1-7 1s-7 4-7-1Z"/></svg>
+              <span class="menu-label">Meus alertas</span>
+            </a>
+            <a class="profile-shortcut" href="#" data-target="aba-denuncias">
+              <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg>
+              <span class="menu-label">Denúncias e decisões</span>
+            </a>
+            <a class="profile-shortcut" href="#" data-target="aba-perfil">
+              <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2Z"/></svg>
+              <span class="menu-label">Meu perfil</span>
+            </a>
+            <a class="profile-shortcut" href="#" data-target="aba-conversas">
+              <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8Z"/></svg>
+              <span class="menu-label">Conversas</span>
+            </a>
+            <a class="profile-shortcut" href="#" data-target="aba-dados">
+              <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.7a8 8 0 0 1-1.7 1l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.7-1l-1.7.7-1.4-2.4L7.3 15a8 8 0 0 1 0-2l-1.4-1.1 1.4-2.4 1.7.7a8 8 0 0 1 1.7-1l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.7 1l1.7-.7 1.4 2.4-1.4 1.1a8 8 0 0 1 0 2Z"/></svg>
+              <span class="menu-label">Dados da demonstração</span>
+            </a>
+            <a class="profile-shortcut" href="#" data-target="aba-termos">
+              <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg>
+              <span class="menu-label">Termos de Uso</span>
+            </a>
+            <a class="profile-shortcut" href="#" data-target="aba-privacidade">
+              <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg>
+              <span class="menu-label">Privacidade</span>
+            </a>
+            <a class="profile-shortcut" href="servicos.html">
+              <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.8 4.7a5.4 5.4 0 0 0-7.6 0L12 5.9l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.7a5.4 5.4 0 0 0 0-7.6Z"/></svg>
+              <span class="menu-label">Rede de apoio</span>
+            </a>
+          </nav>
+          
+          <div class="sidebar-footer">
+            <button id="btn-sair" class="btn secondary" style="width: 100%;">
+              <span class="sidebar-logout-icon">↪</span>
+              <span class="menu-label">Sair</span>
+            </button>
+          </div>
+        </aside>
+
+        <!-- PAINEL PRINCIPAL -->
+        <main class="dashboard-main">
+          <div class="dashboard-panels">
+            
+            <!-- ABA 1: PANORAMA -->
+            <section id="aba-panorama" class="aba-conteudo ativa">
+              <div class="dashboard-overview">
+                <p class="eyebrow">PANORAMA GERAL · TUTOR DO PET</p>
+                <div class="page-title">
+                  <div>
+                    <h1 id="titulo-boas-vindas">Olá!</h1>
+                    <p class="intro">Publique alertas e acompanhe os pets sob sua responsabilidade.</p>
+                  </div>
+                </div>
+                
+                <div class="dashboard-stats">
+                  <article>
+                    <strong id="stat-alertas">0</strong>
+                    <span>Alertas seus</span>
+                  </article>
+                  <article>
+                    <strong>0</strong>
+                    <span>Denúncias relacionadas</span>
+                  </article>
+                  <article>
+                    <strong style="color: #692ba4;">Pendente</strong>
+                    <span>Aceite dos termos</span>
+                  </article>
+                </div>
+
+                <section class="onboarding-panel">
+                  <div>
+                    <p class="eyebrow">PRIMEIROS PASSOS</p>
+                    <h2>Comece por aqui</h2>
+                  </div>
+                  <ol>
+                    <li>Complete seu perfil e aceite os termos.</li>
+                    <li>Publique um alerta com localização aproximada.</li>
+                    <li>Acompanhe pistas e atualizações em Meus alertas.</li>
+                  </ol>
+                </section>
+              </div>
+            </section>
+
+            <!-- ABA 2: MEUS ALERTAS -->
+            <section id="aba-alertas" class="aba-conteudo dashboard-view-panel">
+              <h1>Meus alertas</h1>
+              <div class="list alert-grid" id="lista-meus-pets"></div>
+            </section>
+
+            <!-- ABA 3: MEU PERFIL -->
+            <section id="aba-perfil" class="aba-conteudo dashboard-view-panel">
+              <h1>Meu perfil</h1>
+              <p class="intro" style="margin-bottom: 20px;">Mantenha seus dados cadastrais atualizados.</p>
+              
+              <form id="form-perfil" class="form signup-form">
+                <div class="perfil-foto-wrapper">
+                  <img id="perfil-foto-preview" class="perfil-foto-preview" src="" alt="Foto de perfil">
+                  <div>
+                    <label class="btn secondary" style="cursor: pointer; display: inline-block; padding: 10px;">
+                      Alterar foto
+                      <input type="file" id="perfil-foto-input" accept="image/*" style="display: none;">
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-grid identity-fields">
+                  <label>Nome completo <input class="control" type="text" id="perfil-nome" required></label>
+                  <label>E-mail <input class="control" type="email" id="perfil-email" required disabled></label>
+                  <label>Telefone <input class="control" type="tel" id="perfil-telefone"></label>
+                </div>
+                
+                <div class="actions" style="margin-top: 20px;">
+                  <button type="submit" class="btn primary">Salvar alterações</button>
+                </div>
+              </form>
+            </section>
+
+            <!-- ABA 4: DENÚNCIAS -->
+            <section id="aba-denuncias" class="aba-conteudo dashboard-view-panel">
+              <h1>Denúncias e decisões</h1>
+              <p class="intro">Acompanhe suas denúncias e decisões sobre seus alertas.</p>
+              <div class="em-breve-box" style="margin-top: 20px;">
+                <h2>Nenhuma denúncia</h2>
+                <p>As denúncias deste perfil aparecerão aqui.</p>
+              </div>
+            </section>
+
+            <!-- ABA 5: CONVERSAS -->
+            <section id="aba-conversas" class="aba-conteudo dashboard-view-panel">
+              <h1>Conversas</h1>
+              <p class="intro">Troque mensagens e deixe recados com anexo.</p>
+              <div class="em-breve-box" style="margin-top: 20px;">
+                <h2>Nenhuma mensagem</h2>
+                <p>Você ainda não tem conversas iniciadas neste navegador.</p>
+              </div>
+            </section>
+
+            <!-- ABA 6: DADOS -->
+            <section id="aba-dados" class="aba-conteudo dashboard-view-panel">
+              <h1>Dados da demonstração</h1>
+              <p class="intro">Exportação e gestão dos dados locais.</p>
+              <div class="em-breve-box" style="margin-top: 20px;">
+                <h2>Exportar Dados</h2>
+                <p>Aqui você poderá baixar um arquivo JSON com todos os seus registros.</p>
+              </div>
+            </section>
+
+            <!-- ABA 7: TERMOS DE USO -->
+            <section id="aba-termos" class="aba-conteudo dashboard-view-panel">
+              <div class="legal-box">
+                <p class="eyebrow">Versão 0.2 acadêmica · 25/09/2026</p>
+                <h1>Termos de Uso</h1>
+                <div class="notice warn" style="margin-bottom: 20px; padding: 15px; background: #fff1da; border-radius: 8px; color: #7f5425;">
+                  Demonstração acadêmica do BuscaPet. Esta minuta precisa de revisão jurídica antes de uma operação pública. Use informações fictícias nos testes.
+                </div>
+                <h2>1. Finalidade e funcionamento</h2>
+                <p>O BuscaPet organiza alertas de animais perdidos ou encontrados e pistas de avistamento. Nesta versão, os registros ficam neste navegador. A publicação não é enviada a outras pessoas. O sistema não oferece atendimento de emergência, resgate, atendimento veterinário ou certificação de propriedade do animal.</p>
+                <h2>2. Perfil de demonstração</h2>
+                <p>O login local apresenta funções diferentes para tutor, colaborador, moderador e administrador. O administrador pode cadastrar perfis; o tutor pode se cadastrar. Esta separação é apenas visual e não constitui autenticação ou controle de acesso seguro: dados cadastrais, fotos e credenciais ficam no navegador e podem ser alterados por quem o utiliza. Use somente dados fictícios; não informe senhas reais, documentos, endereços residenciais ou contatos reais.</p>
+                <h2>3. Publicações e conduta</h2>
+                <p>Publique informações de boa-fé e apenas fotos que você possa utilizar. Não publique dados de terceiros sem fundamento adequado. São proibidos golpes, extorsão, ameaças, assédio, discriminação, maus-tratos, venda de animais, spam, acusações sem fundamento e uso abusivo das denúncias. Uma publicação não comprova a guarda ou a propriedade de um animal.</p>
+                <h2>4. Contatos, chat e recompensas</h2>
+                <p>A divulgação de um contato é opcional e depende de escolha explícita no formulário. O chat é apenas demonstrativo: mensagens e anexos ficam no navegador e não são entregues a outras pessoas. Não use dados pessoais, conteúdo sensível ou anexos reais. O BuscaPet não recebe, transfere, cobra ou garante recompensas. Não faça pagamentos antecipados para receber pistas. Antes de uma entrega, verifique as informações com cautela e procure local seguro.</p>
+                <h2>5. Denúncias, medidas e revisão</h2>
+                <p>O botão Denunciar registra motivo e descrição e permite acompanhar o resultado. O moderador pode analisar, manter, ocultar ou remover a publicação. Medidas sobre contas exigem justificativa. O autor e quem denunciou podem contestar decisões concluídas. O histórico registra as ações no navegador. Denúncias não geram banimento automático e não são encaminhadas a autoridades nesta versão.</p>
+                <h2>6. Limites e responsabilidades</h2>
+                <p>Não há garantia de reencontro, de exatidão de conteúdo de terceiros ou de disponibilidade contínua. O usuário responde por seus próprios atos conforme a lei. Estas disposições não afastam direitos dos usuários nem responsabilidades legalmente atribuídas aos responsáveis pela plataforma, inclusive por conduta própria, proteção de dados ou deveres de atuação aplicáveis.</p>
+                <h2>7. Dados, aceite e alterações</h2>
+                <p>Consulte a Política de Privacidade. O aceite guarda localmente a versão dos termos, o nome de demonstração e a data. Ele não representa autorização genérica para uso de dados. Alterações relevantes deverão ser apresentadas ao usuário. A data deste documento identifica sua versão.</p>
+                <h2>8. Canal desta demonstração</h2>
+                <p>As denúncias e contestações são exclusivamente locais. O projeto ainda não dispõe de canal externo de atendimento. Antes do lançamento, a equipe deverá identificar o responsável pela operação e disponibilizar contato real e acessível. Não use este protótipo para comunicar emergência ou crime.</p>
+              </div>
+            </section>
+
+            <!-- ABA 8: PRIVACIDADE -->
+            <section id="aba-privacidade" class="aba-conteudo dashboard-view-panel">
+              <div class="legal-box">
+                <p class="eyebrow">Versão 0.2 acadêmica · 25/09/2026</p>
+                <h1>Política de Privacidade</h1>
+                <div class="notice warn" style="margin-bottom: 20px; padding: 15px; background: #fff1da; border-radius: 8px; color: #7f5425;">
+                  Esta política descreve o protótipo local. Uma operação pública exigirá definição do controlador, canal de atendimento, fornecedores, bases legais e prazos de retenção.
+                </div>
+                <h2>1. Quais informações ficam salvas</h2>
+                <p>Nome completo, e-mail, telefone, endereço, foto opcional do perfil, senha local de demonstração, versão e data de aceite dos termos, dados dos alertas, foto opcional, contato opcional, favoritos, avistamentos, denúncias, contestações, histórico de moderação e, no chat demonstrativo, mensagens e anexos. Use apenas dados fictícios: essas informações ficam no navegador sem proteção adequada e não devem ser dados reais.</p>
+                <h2>2. Finalidade</h2>
+                <p>Os dados servem para demonstrar publicação, busca, atualização, denúncias e moderação. A foto é reduzida e convertida no navegador. Não há reconhecimento facial, rastreamento por GPS ou análise automatizada de propriedade do animal.</p>
+                <h2>3. Armazenamento e acesso</h2>
+                <p>O aplicativo usa localStorage e não envia seus formulários a um servidor. Os dados cadastrais, fotos, credenciais, registros, mensagens e anexos ficam no mesmo navegador e origem até exclusão manual, restauração dos exemplos ou limpeza do navegador. A validação de e-mail verifica apenas o formato; não confirma a existência da caixa postal. A presença online/offline e a entrega de mensagens são simuladas e não comunicam com outros dispositivos. Pessoas com acesso ao navegador podem consultar e modificar os dados ou simular outro perfil. Este armazenamento não é adequado a dados reais ou confidenciais.</p>
+                <h2>4. Divulgação e compartilhamento</h2>
+                <p>A lista exibe dados do animal e local aproximado. O contato só aparece quando sua divulgação é marcada no formulário. Nesta versão, a visibilidade é simulada dentro do navegador. Exportar dados gera um arquivo com todos os registros, inclusive denúncias e histórico. Guarde-o com cuidado e não o envie ao GitHub. Links externos abrem serviços sujeitos às políticas deles. Se hospedado, o provedor da página pode tratar dados de acesso conforme sua própria política.</p>
+                <h2>5. Controle dos registros</h2>
+                <p>Em Minha área, é possível editar os alertas do tutor de demonstração, exportar registros e apagar os dados locais. Ocultar ou remover uma publicação na moderação não apaga seus registros internos. O botão Apagar dados locais remove também as mensagens e anexos do chat demonstrativo. A plataforma não controla cópias já exportadas.</p>
+                <h2>6. Evolução para a operação real</h2>
+                <p>O planejamento adota coleta mínima, localização pública aproximada e acesso administrativo restrito. A versão pública precisará mapear uma base legal por finalidade, documentar retenção, oferecer canal para direitos dos titulares, proteger acessos e definir resposta a incidentes. Um chat real exigirá controles de acesso, proteção dos anexos, regras de retenção e mecanismos para lidar com abuso. O aceite dos termos será separado de autorizações opcionais. A faixa etária e as medidas aplicáveis a menores precisarão de avaliação específica.</p>
+              </div>
+            </section>
+
+          </div>
+        </main>
+
+      </div>
+    </div>
+
+    <!-- BOTÃO DE ACESSIBILIDADE -->
+    <button class="btn-acessibilidade" id="btn-acessibilidade" aria-label="Abrir menu de acessibilidade">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
+    </button>
+    <div class="menu-acessibilidade" id="menu-acessibilidade">
+      <h4>Acessibilidade</h4>
+      <button type="button" data-action="text-size" data-value="smaller">A− Diminuir texto</button>
+      <button type="button" data-action="text-size" data-value="larger">A+ Aumentar texto</button>
+      <button type="button" data-action="contrast">◐ Alto contraste</button>
+    </div>
+
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      
+      // --- LÓGICA DE ACESSIBILIDADE ---
+      const btnAcess = document.getElementById('btn-acessibilidade');
+      const menuAcess = document.getElementById('menu-acessibilidade');
+      if (btnAcess && menuAcess) {
+        btnAcess.addEventListener('click', () => menuAcess.classList.toggle('aberto'));
+        document.addEventListener('click', (e) => {
+          if (!btnAcess.contains(e.target) && !menuAcess.contains(e.target)) menuAcess.classList.remove('aberto');
+        });
+        menuAcess.querySelectorAll('button').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const action = btn.dataset.action;
+            const value = btn.dataset.value;
+            if (action === 'text-size') {
+              if (value === 'larger') {
+                document.documentElement.classList.remove('a11y-small-text');
+                document.documentElement.classList.toggle('a11y-large-text');
+              } else {
+                document.documentElement.classList.remove('a11y-large-text');
+                document.documentElement.classList.toggle('a11y-small-text');
+              }
+            } else if (action === 'contrast') {
+              const enabled = document.documentElement.classList.toggle('a11y-high-contrast');
+              btn.setAttribute('aria-pressed', String(enabled));
+            }
+          });
+        });
+      }
+
+      // --- LÓGICA DA MINHA ÁREA ---
+      const usuarioString = localStorage.getItem('usuarioLogado');
+      if (!usuarioString) {
+        alert('Você precisa fazer login.');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      let usuario = JSON.parse(usuarioString);
+      let novaFotoBase64 = "";
+
+      document.getElementById('nome-usuario').textContent = usuario.nome;
+      document.getElementById('titulo-boas-vindas').textContent = `Olá, ${usuario.nome}`;
+      
+      const avatarTop = document.getElementById('avatar-usuario');
+      if (usuario.foto_perfil) {
+        avatarTop.innerHTML = `<img src="${usuario.foto_perfil}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+      } else {
+        avatarTop.textContent = usuario.nome.charAt(0).toUpperCase();
+      }
+
+      document.getElementById('perfil-nome').value = usuario.nome;
+      document.getElementById('perfil-email').value = usuario.email;
+      document.getElementById('perfil-telefone').value = usuario.telefone || '';
+      
+      const fotoPreview = document.getElementById('perfil-foto-preview');
+      if (usuario.foto_perfil) fotoPreview.src = usuario.foto_perfil;
+
+      document.getElementById('perfil-foto-input').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          novaFotoBase64 = event.target.result;
+          fotoPreview.src = novaFotoBase64;
+        };
+        reader.readAsDataURL(file);
+      });
+
+      const linksMenu = document.querySelectorAll('.profile-shortcut[data-target]');
+      const abas = document.querySelectorAll('.aba-conteudo');
+
+      linksMenu.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          linksMenu.forEach(l => l.classList.remove('active'));
+          abas.forEach(a => a.classList.remove('ativa'));
+          link.classList.add('active');
+          document.getElementById(link.dataset.target).classList.add('ativa');
+        });
+      });
+
+      document.getElementById('form-perfil').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const dadosAtualizados = {
+          nome: document.getElementById('perfil-nome').value,
+          telefone: document.getElementById('perfil-telefone').value,
+          foto_perfil: novaFotoBase64 || usuario.foto_perfil
+        };
+
+        try {
+          const response = await fetch(`/api/usuarios/${usuario.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dadosAtualizados)
+          });
+
+          if (response.ok) {
+            usuario.nome = dadosAtualizados.nome;
+            usuario.telefone = dadosAtualizados.telefone;
+            usuario.foto_perfil = dadosAtualizados.foto_perfil;
+            localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
+            alert('Perfil atualizado!');
+            window.location.reload();
+          } else {
+            alert('Erro ao atualizar perfil.');
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      });
+
+      document.getElementById('btn-sair').addEventListener('click', () => {
+        localStorage.removeItem('usuarioLogado');
+        window.location.href = 'index.html';
+      });
+
+      try {
+        const response = await fetch('/api/pets');
+        const pets = await response.json();
+        const meusPets = pets.filter(p => p.usuario_id === usuario.id);
+        document.getElementById('stat-alertas').textContent = meusPets.length;
+
+        const lista = document.getElementById('lista-meus-pets');
+        lista.innerHTML = '';
+        if (meusPets.length === 0) {
+          lista.innerHTML = '<p style="padding: 20px;">Você ainda não publicou nenhum alerta.</p>';
+        } else {
+          meusPets.forEach(pet => {
+            const fotoHtml = pet.foto_url ? `<img src="${pet.foto_url}" style="width:100%; height:100%; object-fit:cover;">` : (pet.especie === 'gato' ? '🐈' : '🐶');
+            const card = document.createElement('article');
+            card.className = 'pet';
+            card.style.position = 'relative';
+            card.style.paddingBottom = '60px';
+            card.innerHTML = `
+              <div class="photo">${fotoHtml}</div>
+              <div class="pet-body">
+                <h3>${pet.nome}</h3>
+                <p class="pet-description">${pet.raca || pet.especie}</p>
+                <p class="pet-location">📍 ${pet.regiao}</p>
+              </div>
+              <button class="btn small danger btn-excluir" style="position: absolute; bottom: 15px; left: 15px; right: 15px; z-index: 9999;">Excluir</button>
+            `;
+            card.querySelector('.btn-excluir').addEventListener('click', async (e) => {
+              e.preventDefault(); e.stopPropagation();
+              if (!confirm('Excluir alerta?')) return;
+              await fetch(`/api/pets/${pet.id}`, { method: 'DELETE' });
+              window.location.reload();
+            });
+            lista.appendChild(card);
+          });
+        }
+      } catch (error) { console.error(error); }
+    });
+  </script>
+</body>
+</html>

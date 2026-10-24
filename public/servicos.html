@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BuscaPet | Rede de Apoio</title>
+  <link rel="stylesheet" href="style.css" />
+  
+  <!-- Biblioteca do Mapa (Leaflet) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    /* Estilo para os cards da rede de apoio */
+    .servico-card {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 20px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    }
+    @media (max-width: 768px) {
+      .servico-card { grid-template-columns: 1fr; }
+      .mini-mapa { height: 200px; }
+    }
+
+    .servico-info h3 {
+      font-size: 22px;
+      margin: 0 0 10px 0;
+      color: var(--ink);
+    }
+    .servico-info p {
+      margin: 5px 0;
+      font-size: 14px;
+      color: #555;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .servico-info .destaque {
+      color: var(--p);
+      font-weight: 700;
+      margin-top: 10px;
+    }
+    
+    .mini-mapa {
+      width: 100%;
+      height: 100%;
+      min-height: 220px;
+      border-radius: 12px;
+      border: 1px solid #eee;
+      z-index: 1;
+    }
+
+    /* Estilo do botão flutuante de acessibilidade */
+    .btn-acessibilidade {
+      position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px;
+      border-radius: 50%; background: var(--p); color: white; border: none;
+      cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; transition: transform 0.2s;
+    }
+    .btn-acessibilidade:hover { transform: scale(1.1); }
+    .menu-acessibilidade {
+      position: fixed; bottom: 95px; right: 30px; background: white;
+      border: 1px solid var(--line); border-radius: 16px; padding: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none;
+      flex-direction: column; gap: 8px; z-index: 999; width: 200px;
+    }
+    .menu-acessibilidade.aberto { display: flex; }
+    .menu-acessibilidade h4 { margin: 0 0 5px 0; font-size: 14px; color: #666; text-align: center; }
+    .menu-acessibilidade button {
+      background: #f4f4f8; border: none; padding: 10px; border-radius: 8px;
+      cursor: pointer; font-weight: bold; color: var(--ink); text-align: left;
+    }
+    .menu-acessibilidade button:hover { background: #e0d4fc; }
+  </style>
+</head>
+<body>
+  <main class="phone app-shell">
+    
+    <!-- Cabeçalho -->
+    <header class="app-header">
+      <a class="logo" href="index.html" aria-label="BuscaPet, início">
+        <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="6" cy="8" rx="2" ry="2.7"/><ellipse cx="11" cy="5" rx="2" ry="2.7"/><ellipse cx="17" cy="6" rx="2" ry="2.7"/><ellipse cx="20" cy="11" rx="1.8" ry="2.5"/><path d="M5 18c0-3 4-7 7-7s7 4 7 7c0 5-5 1-7 1s-7 4-7-1Z"/></svg>
+        <span class="wordmark">Busca<strong>Pet</strong></span>
+      </a>
+      <nav class="main-nav">
+        <a href="index.html">Início</a>
+        <a href="mapa.html">Mapa</a>
+        <a href="cadastro.html" class="post-link">+ Publicar</a>
+        <a href="favoritos.html">Favoritos</a>
+        <a href="minha-area.html">Minha Área</a>
+      </nav>
+      <div class="header-links">
+        <a href="servicos.html" class="active">Rede de apoio</a>
+        <span class="mode-pill">Tutor de pet</span>
+      </div>
+    </header>
+
+    <div class="page">
+      <div class="page-title">
+        <div>
+          <p class="eyebrow">Encontrar começa por conectar</p>
+          <h1>Rede de Apoio</h1>
+          <p class="intro">Clínicas, pet shops e banho e tosa parceiros em Campo Grande - MS.</p>
+        </div>
+      </div>
+
+      <div id="lista-servicos">
+        <!-- Card 1 -->
+        <article class="servico-card">
+          <div class="servico-info">
+            <h3>🏥 UniVet Clínica Veterinária</h3>
+            <p>📍 R. Sete de Setembro, 2213 - Centro, Campo Grande - MS</p>
+            <p>🕒 Segunda a Sexta — 7:30 às 19:30</p>
+            <p>📞 (67) 3222-7840</p>
+            <p>📸 @univetcg</p>
+            <p class="destaque">💉 Vacinação &nbsp; ◉ Ração &nbsp; ✂ Tosa &nbsp; ♧ Cirurgia</p>
+            <a href="https://wa.me/556732227840" target="_blank" class="btn primary" style="margin-top: 15px; width: auto; display: inline-flex; padding: 10px 20px;">Chamar no WhatsApp</a>
+          </div>
+          <div id="mapa-univet" class="mini-mapa"></div>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="servico-card">
+          <div class="servico-info">
+            <h3>🛍️ Pet Shop Anjos de Quatro Patas</h3>
+            <p>📍 Av. Afonso Pena, 4000 - Centro, Campo Grande - MS</p>
+            <p>🕒 Segunda a Sábado — 8:00 às 18:00</p>
+            <p>📞 (67) 3321-1234</p>
+            <p>📸 @anjosquatropatas</p>
+            <p class="destaque">◉ Ração &nbsp; ⌁ Acessórios &nbsp; ✂ Banho e Tosa</p>
+            <a href="https://wa.me/556733211234" target="_blank" class="btn primary" style="margin-top: 15px; width: auto; display: inline-flex; padding: 10px 20px;">Chamar no WhatsApp</a>
+          </div>
+          <div id="mapa-anjos" class="mini-mapa"></div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="servico-card">
+          <div class="servico-info">
+            <h3>🐾 Vet Intensive</h3>
+            <p>📍 R. da Paz, 1500 - Vila Taveirópolis, Campo Grande - MS</p>
+            <p>🕒 24 Horas (Emergência)</p>
+            <p>📞 (67) 3025-6789</p>
+            <p>📸 @vetintensive</p>
+            <p class="destaque">💉 Vacinação &nbsp; ♡ Exames</p>
+            <a href="https://wa.me/556730256789" target="_blank" class="btn primary" style="margin-top: 15px; width: auto; display: inline-flex; padding: 10px 20px;">Chamar no WhatsApp</a>
+          </div>
+          <div id="mapa-intensive" class="mini-mapa"></div>
+        </article>
+
+        <!-- Card 4 -->
+        <article class="servico-card">
+          <div class="servico-info">
+            <h3>✂️ AuQmia Banho e Tosa</h3>
+            <p>📍 R. Bahia, 800 - Jardim dos Estados, Campo Grande - MS</p>
+            <p>🕒 Segunda a Sábado — 9:00 às 18:00</p>
+            <p>📞 (67) 3389-0123</p>
+            <p>📸 @auqmia</p>
+            <p class="destaque">✂ Banho e Tosa &nbsp; ♡ Estética</p>
+            <a href="https://wa.me/556733890123" target="_blank" class="btn primary" style="margin-top: 15px; width: auto; display: inline-flex; padding: 10px 20px;">Chamar no WhatsApp</a>
+          </div>
+          <div id="mapa-auqmia" class="mini-mapa"></div>
+        </article>
+      </div>
+    </div>
+
+    <!-- BOTÃO DE ACESSIBILIDADE -->
+    <button class="btn-acessibilidade" id="btn-acessibilidade" aria-label="Abrir menu de acessibilidade">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
+    </button>
+    <div class="menu-acessibilidade" id="menu-acessibilidade">
+      <h4>Acessibilidade</h4>
+      <button type="button" data-action="text-size" data-value="smaller">A− Diminuir texto</button>
+      <button type="button" data-action="text-size" data-value="larger">A+ Aumentar texto</button>
+      <button type="button" data-action="contrast">◐ Alto contraste</button>
+    </div>
+
+  </main>
+
+  <!-- Script do Mapa -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Lógica de Acessibilidade
+    const btnAcess = document.getElementById('btn-acessibilidade');
+    const menuAcess = document.getElementById('menu-acessibilidade');
+    if (btnAcess && menuAcess) {
+      btnAcess.addEventListener('click', () => menuAcess.classList.toggle('aberto'));
+      document.addEventListener('click', (e) => {
+        if (!btnAcess.contains(e.target) && !menuAcess.contains(e.target)) menuAcess.classList.remove('aberto');
+      });
+      menuAcess.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const action = btn.dataset.action;
+          const value = btn.dataset.value;
+          if (action === 'text-size') {
+            if (value === 'larger') {
+              document.documentElement.classList.remove('a11y-small-text');
+              document.documentElement.classList.toggle('a11y-large-text');
+            } else {
+              document.documentElement.classList.remove('a11y-large-text');
+              document.documentElement.classList.toggle('a11y-small-text');
+            }
+          } else if (action === 'contrast') {
+            const enabled = document.documentElement.classList.toggle('a11y-high-contrast');
+            btn.setAttribute('aria-pressed', String(enabled));
+          }
+        });
+      });
+    }
+
+    // Lógica do Mapa
+    function criarMiniMapa(idElemento, lat, lng, nomeLocal) {
+      const mapa = L.map(idElemento, {
+        zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false
+      }).setView([lat, lng], 15);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapa);
+
+      const marcador = L.marker([lat, lng]).addTo(mapa);
+      marcador.bindPopup(`<b>${nomeLocal}</b>`).openPopup();
+
+      setTimeout(() => mapa.invalidateSize(), 200);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      criarMiniMapa('mapa-univet', -20.4428, -54.6465, 'UniVet Clínica');
+      criarMiniMapa('mapa-anjos', -20.4595, -54.6170, 'Pet Shop Anjos');
+      criarMiniMapa('mapa-intensive', -20.4910, -54.5950, 'Vet Intensive');
+      criarMiniMapa('mapa-auqmia', -20.4505, -54.6050, 'AuQmia Banho e Tosa');
+    });
+  </script>
+</body>
+</html>
