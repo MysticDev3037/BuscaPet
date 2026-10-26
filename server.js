@@ -59,14 +59,9 @@ app.delete('/api/pets/:id', async (req, res) => {
 // ================= USUÁRIOS =================
 app.post('/api/cadastro', async (req, res) => {
   try {
-    const { nome, email, senha, cpf, data_nascimento, telefone, foto_perfil, cep, rua, numero, complemento, bairro, cidade, estado } = req.body;
-    const result = await pool.query(
-      `INSERT INTO usuarios (nome, email, senha, cpf, data_nascimento, telefone, foto_perfil, cep, rua, numero, complemento, bairro, cidade, estado) 
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING id, nome, email, foto_perfil`,
-      [nome, email, senha, cpf, data_nascimento, telefone, foto_perfil, cep, rua, numero, complemento, bairro, cidade, estado]
-    );
-    res.status(201).json(result.rows[0]);
+    // ... código de inserção ...
   } catch (err) {
+    console.error("ERRO NO CADASTRO:", err); // <-- ISSO VAI MOSTRAR O ERRO NOS LOGS
     if (err.code === '23505') return res.status(400).json({ erro: 'E-mail ou CPF já cadastrado.' });
     res.status(500).json({ erro: 'Erro interno ao cadastrar.' });
   }
