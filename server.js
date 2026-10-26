@@ -13,6 +13,7 @@ app.get('/api/pets', async (req, res) => {
     const result = await pool.query('SELECT * FROM pets ORDER BY id DESC');
     res.json(result.rows);
   } catch (err) {
+    console.error("ERRO AO BUSCAR PETS:", err);
     res.status(500).json({ erro: 'Erro ao buscar pets' });
   }
 });
@@ -28,6 +29,7 @@ app.get('/api/pets/:id', async (req, res) => {
     if (result.rows.length === 0) return res.status(404).json({ erro: 'Pet não encontrado' });
     res.json(result.rows[0]);
   } catch (err) {
+    console.error("ERRO AO BUSCAR PET:", err);
     res.status(500).json({ erro: 'Erro ao buscar pet' });
   }
 });
@@ -42,6 +44,7 @@ app.post('/api/pets', async (req, res) => {
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
+    console.error("ERRO AO CADASTRAR PET:", err);
     res.status(500).json({ erro: 'Erro ao cadastrar pet' });
   }
 });
@@ -52,6 +55,7 @@ app.delete('/api/pets/:id', async (req, res) => {
     await pool.query('DELETE FROM pets WHERE id = $1', [id]);
     res.json({ mensagem: 'Pet excluído com sucesso' });
   } catch (err) {
+    console.error("ERRO AO EXCLUIR PET:", err);
     res.status(500).json({ erro: 'Erro ao excluir pet' });
   }
 });
@@ -59,10 +63,30 @@ app.delete('/api/pets/:id', async (req, res) => {
 // ================= USUÁRIOS =================
 app.post('/api/cadastro', async (req, res) => {
   try {
-    // ... código de inserção ...
+    const { 
+      nome, email, senha, cpf, data_nascimento, telefone, foto_perfil,
+      cep, rua, numero, complemento, bairro, cidade, estado 
+    } = req.body;
+    
+    const result = await pool.query(
+      `INSERT INTO usuarios 
+       (nome, email, senha, cpf, data_nascimento, telefone, foto_perfil, cep, rua, numero, complemento, bairro, cidade, estado) 
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) 
+       RETURNING id, nome, email, foto_perfil`,
+      [nome, email, senha, cpf, data_nascimento, telefone, foto_perfil, cep, rua, numero, complemento, bairro, cidade, estado]
+    );
+    res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error("ERRO NO CADASTRO:", err); // <-- ISSO VAI MOSTRAR O ERRO NOS LOGS
-    if (err.code === '23505') return res.status(400).json({ erro: 'E-mail ou CPF já cadastrado.' });
+    console.error("ERRO NO CADASTRO:", err); // <-- ISSO VAI MOSTRAR O ERRO
+    if (err.code === '23505') {
+      if (err.detail.includes('cpf')) {
+        return res.status(400).json({ erro: 'Este CPF já está cadastrado no sistema.' });
+      }
+      if (err.detail.includes('email')) {
+        return res.status(400).json({ erro: 'Este e-mail já está cadastrado.' });
+      }
+      return res.status(400).json({ erro: 'Dados duplicados. Verifique e tente novamente.' });
+    }
     res.status(500).json({ erro: 'Erro interno ao cadastrar.' });
   }
 });
@@ -77,11 +101,11 @@ app.post('/api/login', async (req, res) => {
     if (result.rows.length === 0) return res.status(401).json({ erro: 'E-mail ou senha incorretos' });
     res.json(result.rows[0]);
   } catch (err) {
+    console.error("ERRO NO LOGIN:", err);
     res.status(500).json({ erro: 'Erro no servidor' });
   }
 });
 
-// Rota de Atualização de Perfil (O Botão Salvar usa isso)
 app.put('/api/usuarios/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -93,53 +117,36 @@ app.put('/api/usuarios/:id', async (req, res) => {
     if (result.rows.length === 0) return res.status(404).json({ erro: 'Usuário não encontrado' });
     res.json(result.rows[0]);
   } catch (err) {
-    console.error(err);
+    console.error("ERRO AO ATUALIZAR USUÁRIO:", err);
     res.status(500).json({ erro: 'Erro ao atualizar usuário' });
   }
 });
 
-// Listar favoritos do usuário
+// ================= FAVORITOS =================
 app.get('/api/favoritos/:usuario_id', async (req, res) => {
   try {
     const { usuario_id } = req.params;
-    const result = await pool.query(
-      'SELECT pet_id FROM favoritos WHERE usuario_id = $1',
-      [usuario_id]
-    );
+    const result = await pool.query('SELECT pet_id FROM favoritos WHERE usuario_id = $1', [usuario_id]);
     res.json(result.rows.map(r => r.pet_id));
   } catch (err) {
+    console.error("ERRO AO BUSCAR FAVORITOS:", err);
     res.status(500).json({ erro: 'Erro ao buscar favoritos' });
   }
 });
 
-// Adicionar ou remover favorito (toggle)
 app.post('/api/favoritos', async (req, res) => {
   try {
     const { usuario_id, pet_id } = req.body;
-
-    // Verifica se já existe
-    const existe = await pool.query(
-      'SELECT id FROM favoritos WHERE usuario_id = $1 AND pet_id = $2',
-      [usuario_id, pet_id]
-    );
-
+    const existe = await pool.query('SELECT id FROM favoritos WHERE usuario_id = $1 AND pet_id = $2', [usuario_id, pet_id]);
     if (existe.rows.length > 0) {
-      // Já existe → remove
-      await pool.query(
-        'DELETE FROM favoritos WHERE usuario_id = $1 AND pet_id = $2',
-        [usuario_id, pet_id]
-      );
+      await pool.query('DELETE FROM favoritos WHERE usuario_id = $1 AND pet_id = $2', [usuario_id, pet_id]);
       return res.json({ acao: 'removido' });
     } else {
-      // Não existe → adiciona
-      await pool.query(
-        'INSERT INTO favoritos (usuario_id, pet_id) VALUES ($1, $2)',
-        [usuario_id, pet_id]
-      );
+      await pool.query('INSERT INTO favoritos (usuario_id, pet_id) VALUES ($1, $2)', [usuario_id, pet_id]);
       return res.json({ acao: 'adicionado' });
     }
   } catch (err) {
-    console.error(err);
+    console.error("ERRO AO FAVORITAR:", err);
     res.status(500).json({ erro: 'Erro ao favoritar' });
   }
 });
