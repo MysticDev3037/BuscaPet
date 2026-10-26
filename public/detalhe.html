@@ -27,7 +27,6 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.03);
     }
     
-    /* Estilo do botão favorito ativo */
     .btn-favorito.ativo {
       background: #fff0f2;
       color: #e11d48;
@@ -90,7 +89,6 @@
         const fotoHtml = pet.foto_url 
           ? `<img src="${pet.foto_url}" alt="${pet.nome}" style="width:100%; height:100%; object-fit:cover;">` 
           : emoji;
-        const recompensa = pet.recompensa > 0 ? `R$ ${Number(pet.recompensa).toFixed(2).replace('.', ',')}` : 'Sem recompensa';
         const tagStatus = pet.status === 'encontrado' ? 'Pet encontrado' : 'Pet perdido';
         const dataAtual = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
 
@@ -153,13 +151,7 @@
                     <b>${dataAtual}</b>
                   </p>
                 </div>
-                <div>
-                  <span class="ico">💰</span>
-                  <p>
-                    <small>Recompensa informada pelo autor</small>
-                    <b>${recompensa}</b>
-                  </p>
-                </div>
+                <!-- BLOCO DE RECOMPENSA REMOVIDO DAQUI -->
               </div>
               <h2 class="section-heading">Características e informações</h2>
               <p class="desc">${pet.descricao || 'O tutor não deixou uma descrição detalhada.'}</p>
