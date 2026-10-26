@@ -161,13 +161,15 @@ app.listen(port, () => {
 app.delete('/api/usuarios/:id', async (req, res) => {
   try {
     const { id } = req.params;
+    
+    // O banco já está configurado com ON DELETE CASCADE, então isso vai apagar os pets automaticamente
     const result = await pool.query('DELETE FROM usuarios WHERE id = $1 RETURNING id', [id]);
     
     if (result.rows.length === 0) {
       return res.status(404).json({ erro: 'Usuário não encontrado.' });
     }
     
-    res.json({ mensagem: 'Conta desativada com sucesso.' });
+    res.json({ mensagem: 'Conta e anúncios desativados com sucesso.' });
   } catch (err) {
     console.error("ERRO AO DELETAR USUÁRIO:", err);
     res.status(500).json({ erro: 'Erro ao desativar conta.' });
