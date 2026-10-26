@@ -261,16 +261,12 @@
     document.getElementById('form-cadastro').addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // 1. Valida CPF
+     
+       // 1. Valida CPF (Desativado para aceitar dados fictícios)
       const cpfValue = document.getElementById('cpf').value;
-      if (!validaCPF(cpfValue)) {
-        document.getElementById('cpf-error').classList.add('show');
-        return;
-      } else {
-        document.getElementById('cpf-error').classList.remove('show');
-      }
-
+      // A validação foi removida. Agora aceita qualquer valor.
       // 2. Valida se as senhas são iguais
+      <!-- <span id="cpf-error" class="error-msg">CPF inválido.</span> -->
       if (senhaInput.value !== confirmarInput.value) {
         senhaErro.classList.add('show');
         return;
