@@ -1,4 +1,3 @@
-console.log("A variável DATABASE_URL está configurada?", !!process.env.DATABASE_URL);
 const express = require('express');
 const path = require('path');
 const pool = require('./db');
@@ -78,7 +77,7 @@ app.post('/api/cadastro', async (req, res) => {
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error("ERRO NO CADASTRO:", err); // <-- ISSO VAI MOSTRAR O ERRO
+    console.error("ERRO NO CADASTRO:", err);
     if (err.code === '23505') {
       if (err.detail.includes('cpf')) {
         return res.status(400).json({ erro: 'Este CPF já está cadastrado no sistema.' });
@@ -123,6 +122,23 @@ app.put('/api/usuarios/:id', async (req, res) => {
   }
 });
 
+// Rota para desativar (excluir) a conta do usuário
+app.delete('/api/usuarios/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('DELETE FROM usuarios WHERE id = $1 RETURNING id', [id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ erro: 'Usuário não encontrado.' });
+    }
+    
+    res.json({ mensagem: 'Conta e anúncios desativados com sucesso.' });
+  } catch (err) {
+    console.error("ERRO AO DELETAR USUÁRIO:", err);
+    res.status(500).json({ erro: 'Erro ao desativar conta.' });
+  }
+});
+
 // ================= FAVORITOS =================
 app.get('/api/favoritos/:usuario_id', async (req, res) => {
   try {
@@ -152,31 +168,7 @@ app.post('/api/favoritos', async (req, res) => {
   }
 });
 
-// ================= INICIAR =================
-app.listen(port, () => {
-  console.log(`Servidor BuscaPet rodando em http://localhost:${port}`);
-});
-
-// Rota para desativar (excluir) a conta do usuário
-app.delete('/api/usuarios/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    
-    // O banco já está configurado com ON DELETE CASCADE, então isso vai apagar os pets automaticamente
-    const result = await pool.query('DELETE FROM usuarios WHERE id = $1 RETURNING id', [id]);
-    
-    if (result.rows.length === 0) {
-      return res.status(404).json({ erro: 'Usuário não encontrado.' });
-    }
-    
-    res.json({ mensagem: 'Conta e anúncios desativados com sucesso.' });
-  } catch (err) {
-    console.error("ERRO AO DELETAR USUÁRIO:", err);
-    res.status(500).json({ erro: 'Erro ao desativar conta.' });
-  }
-});
-
-// Rota para criar uma denúncia
+// ================= DENÚNCIAS =================
 app.post('/api/denuncias', async (req, res) => {
   try {
     const { pet_id, usuario_id, motivo, descricao } = req.body;
@@ -190,4 +182,9 @@ app.post('/api/denuncias', async (req, res) => {
     console.error("ERRO AO DENUNCIAR:", err);
     res.status(500).json({ erro: 'Erro ao registrar denúncia.' });
   }
+});
+
+// ================= INICIAR =================
+app.listen(port, () => {
+  console.log(`Servidor BuscaPet rodando em http://localhost:${port}`);
 });
