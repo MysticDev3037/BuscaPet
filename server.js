@@ -156,3 +156,20 @@ app.post('/api/favoritos', async (req, res) => {
 app.listen(port, () => {
   console.log(`Servidor BuscaPet rodando em http://localhost:${port}`);
 });
+
+// Rota para desativar (excluir) a conta do usuário
+app.delete('/api/usuarios/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('DELETE FROM usuarios WHERE id = $1 RETURNING id', [id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ erro: 'Usuário não encontrado.' });
+    }
+    
+    res.json({ mensagem: 'Conta desativada com sucesso.' });
+  } catch (err) {
+    console.error("ERRO AO DELETAR USUÁRIO:", err);
+    res.status(500).json({ erro: 'Erro ao desativar conta.' });
+  }
+});

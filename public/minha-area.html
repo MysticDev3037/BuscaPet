@@ -218,8 +218,10 @@
                   <label>Telefone <input class="control" type="tel" id="perfil-telefone"></label>
                 </div>
                 
-                <div class="actions" style="margin-top: 20px;">
+                <!-- BOTÕES DE AÇÃO NO PERFIL -->
+                <div class="actions" style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
                   <button type="submit" class="btn primary">Salvar alterações</button>
+                  <button type="button" id="btn-desativar" class="btn danger">Desativar minha conta</button>
                 </div>
               </form>
             </section>
@@ -433,6 +435,32 @@
           }
         } catch (error) {
           console.error(error);
+        }
+      });
+
+      // --- DESATIVAR CONTA ---
+      document.getElementById('btn-desativar').addEventListener('click', async () => {
+        const confirmacao1 = confirm('Tem certeza que deseja desativar sua conta? Todos os seus dados de perfil serão apagados.');
+        if (!confirmacao1) return;
+
+        const confirmacao2 = confirm('Esta ação é permanente e não pode ser desfeita. Deseja realmente continuar?');
+        if (!confirmacao2) return;
+
+        try {
+          const response = await fetch(`/api/usuarios/${usuario.id}`, {
+            method: 'DELETE'
+          });
+
+          if (response.ok) {
+            alert('Sua conta foi desativada.');
+            localStorage.removeItem('usuarioLogado');
+            window.location.href = 'index.html';
+          } else {
+            alert('Erro ao desativar a conta.');
+          }
+        } catch (error) {
+          console.error(error);
+          alert('Erro de conexão.');
         }
       });
 
