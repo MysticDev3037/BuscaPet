@@ -1,18 +1,22 @@
-require('dotenv').config(); // Carrega as variáveis do .env
-
 const { Pool } = require('pg');
 
-const pool = process.env.DATABASE_URL 
-  ? new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false }
-    })
-  : new Pool({
-      user: 'postgres',
-      host: 'localhost',
-      database: 'buscapet_db',
-      password: process.env.DB_PASSWORD, // <-- Agora lê do .env
-      port: 5432,
-    });
+let pool;
+
+if (process.env.DATABASE_URL) {
+  // Se estiver no Render (ou tiver a variável), usa a URL do banco online
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+  });
+} else {
+  // Se estiver no seu PC, usa o banco local
+  pool = new Pool({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'buscapet_db',
+    password: '33467065',
+    port: 5432,
+  });
+}
 
 module.exports = pool;
