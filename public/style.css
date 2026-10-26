@@ -4459,3 +4459,85 @@ html.a11y-high-contrast textarea {
     .menu-acessibilidade button:hover {
       background: #e0d4fc;
     }
+
+    /* =========================================
+   AJUSTES DE RESPONSIVIDADE PARA CELULAR
+   ========================================= */
+@media (max-width: 768px) {
+  /* 1. Ajuste do Cabeçalho (Home, Mapa, etc.) */
+  .app-header {
+    flex-direction: column;
+    padding: 15px;
+    gap: 15px;
+    align-items: center;
+  }
+
+  .main-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .main-nav a {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  /* Esconde o "Rede de apoio" e o "Tutor de pet" no topo para não quebrar */
+  .header-links {
+    display: none;
+  }
+
+  /* 2. Ajuste dos Cards de Pets na Home */
+  .list.alert-grid {
+    grid-template-columns: 1fr; /* Uma coluna só no celular */
+    padding: 0 10px;
+  }
+
+  .catalog-intro {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .browse-layout {
+    grid-template-columns: 1fr; /* Remove a barra lateral de filtros */
+  }
+
+  .browse-sidebar {
+    display: none; /* Esconde os filtros no celular para não poluir */
+  }
+
+  /* 3. Ajuste da Minha Área (Menu Lateral) */
+  .profile-sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+    border-radius: 12px;
+  }
+
+  .dashboard-layout {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 4. Ajuste da Página de Detalhes */
+  .detail-layout {
+    grid-template-columns: 1fr; /* Foto em cima, texto embaixo */
+    gap: 20px;
+  }
+
+  .detail-photo {
+    height: 300px;
+  }
+
+  /* 5. Ajuste do Login e Cadastro */
+  .login-page, .signup-page {
+    padding: 10px;
+  }
+  
+  .login-panel {
+    padding: 20px 15px;
+  }
+}
