@@ -119,8 +119,9 @@
           <div class="detail-layout">
             <div>
               <div class="detail-photo">${fotoHtml}</div>
-              <div class="actions">
-                <button id="btn-favorito" class="${classeFav}" style="width:100%;">${textoFav}</button>
+              <div class="actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button id="btn-favorito" class="${classeFav}" style="flex: 1;">${textoFav}</button>
+                <button id="btn-denunciar" class="btn secondary" style="flex: 1; color: #a92b48; border-color: #f2c3ce;">Denunciar</button>
               </div>
               <p class="hint" style="margin-top: 10px;">Este animal e este alerta são criados pela comunidade.</p>
             </div>
@@ -151,7 +152,6 @@
                     <b>${dataAtual}</b>
                   </p>
                 </div>
-                <!-- BLOCO DE RECOMPENSA REMOVIDO DAQUI -->
               </div>
               <h2 class="section-heading">Características e informações</h2>
               <p class="desc">${pet.descricao || 'O tutor não deixou uma descrição detalhada.'}</p>
@@ -188,6 +188,43 @@
           } catch (err) {
             console.error(err);
             alert('Erro ao favoritar.');
+          }
+        });
+
+        // Lógica do clique no botão de denunciar
+        document.getElementById('btn-denunciar').addEventListener('click', async () => {
+          if (!usuario) {
+            alert('Você precisa estar logado para denunciar um anúncio.');
+            window.location.href = 'login.html';
+            return;
+          }
+
+          // Pergunta o motivo
+          const motivo = prompt('Por que você está denunciando este anúncio?\n\nOpções: Golpe, Informação falsa, Maus-tratos, Outro.');
+          if (!motivo) return; // Se cancelar, não faz nada
+
+          const descricao = prompt('Descreva o problema (opcional):');
+
+          try {
+            const res = await fetch('/api/denuncias', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                pet_id: parseInt(petId),
+                usuario_id: usuario.id,
+                motivo: motivo,
+                descricao: descricao || ''
+              })
+            });
+
+            if (res.ok) {
+              alert('Denúncia registrada. Nossa equipe irá analisar. Obrigado!');
+            } else {
+              alert('Erro ao registrar denúncia.');
+            }
+          } catch (err) {
+            console.error(err);
+            alert('Erro de conexão.');
           }
         });
 

@@ -175,3 +175,19 @@ app.delete('/api/usuarios/:id', async (req, res) => {
     res.status(500).json({ erro: 'Erro ao desativar conta.' });
   }
 });
+
+// Rota para criar uma denúncia
+app.post('/api/denuncias', async (req, res) => {
+  try {
+    const { pet_id, usuario_id, motivo, descricao } = req.body;
+    const result = await pool.query(
+      `INSERT INTO denuncias (pet_id, usuario_id, motivo, descricao)
+       VALUES ($1, $2, $3, $4) RETURNING *`,
+      [pet_id, usuario_id, motivo, descricao]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error("ERRO AO DENUNCIAR:", err);
+    res.status(500).json({ erro: 'Erro ao registrar denúncia.' });
+  }
+});
