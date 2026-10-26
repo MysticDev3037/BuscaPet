@@ -1,4 +1,4 @@
-console.log("DATABASE_URL configurada?", !!process.env.DATABASE_URL);
+console.log("A variável DATABASE_URL está configurada?", !!process.env.DATABASE_URL);
 const express = require('express');
 const path = require('path');
 const pool = require('./db');
