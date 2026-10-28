@@ -6,11 +6,9 @@
   <title>BuscaPet | Mapa</title>
   <link rel="stylesheet" href="style.css" />
   
-  <!-- Biblioteca do Mapa (Leaflet) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   
   <style>
-    /* Layout do Mapa */
     .map-container {
       display: flex;
       flex-direction: column;
@@ -40,56 +38,32 @@
       max-width: 400px;
     }
     
-    .filter-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-    }
+    .filter-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
     .filter-header h3 { margin: 0; font-size: 16px; }
     .filter-header span { font-size: 20px; transition: transform 0.2s; }
     .filter-header.aberto span { transform: rotate(180deg); }
 
-    .filter-body {
-      display: none;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 10px;
-    }
+    .filter-body { display: none; flex-direction: column; gap: 12px; margin-top: 10px; }
     .filter-body.aberto { display: flex; }
 
     .filter-group { display: flex; flex-direction: column; gap: 5px; }
     .filter-group label { font-size: 12px; font-weight: bold; color: #555; }
-    .filter-group select, .filter-group input {
-      padding: 10px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      font-size: 14px;
-    }
+    .filter-group select { padding: 10px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; }
 
-    .order-btn-group {
-      display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
-    }
+    .order-btn-group { display: flex; gap: 5px; flex-wrap: wrap; }
     .order-btn {
-      flex: 1;
-      padding: 8px;
-      border: 1px solid var(--line);
-      background: #f9f9ff;
-      border-radius: 8px;
-      font-size: 12px;
-      cursor: pointer;
-      text-align: center;
+      flex: 1; padding: 8px; border: 1px solid var(--line); background: #f9f9ff;
+      border-radius: 8px; font-size: 12px; cursor: pointer; text-align: center;
     }
-    .order-btn.active {
-      background: var(--p);
-      color: white;
-      border-color: var(--p);
-      font-weight: bold;
-    }
+    .order-btn.active { background: var(--p); color: white; border-color: var(--p); font-weight: bold; }
 
-    /* Botões Flutuantes */
+    /* Spinner de carregamento */
+    .loading-overlay {
+      position: absolute; inset: 0; background: rgba(255,255,255,0.7);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; font-weight: bold; color: var(--p); font-size: 18px;
+    }
+    
     .btn-acessibilidade {
       position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px;
       border-radius: 50%; background: var(--p); color: white; border: none;
@@ -97,7 +71,6 @@
       display: flex; align-items: center; justify-content: center;
       z-index: 1000; transition: transform 0.2s;
     }
-    .btn-acessibilidade:hover { transform: scale(1.1); }
     .menu-acessibilidade {
       position: fixed; bottom: 95px; right: 30px; background: white;
       border: 1px solid var(--line); border-radius: 16px; padding: 15px;
@@ -105,36 +78,31 @@
       flex-direction: column; gap: 8px; z-index: 999; width: 200px;
     }
     .menu-acessibilidade.aberto { display: flex; }
-    .menu-acessibilidade h4 { margin: 0 0 5px 0; font-size: 14px; color: #666; text-align: center; }
     .menu-acessibilidade button {
       background: #f4f4f8; border: none; padding: 10px; border-radius: 8px;
       cursor: pointer; font-weight: bold; color: var(--ink); text-align: left;
     }
-    .menu-acessibilidade button:hover { background: #e0d4fc; }
   </style>
 </head>
 <body>
   <main class="phone app-shell">
     
-    <!-- CABEÇALHO -->
     <header class="app-header">
-      <a class="logo" href="index.html" aria-label="BuscaPet, início">
-        <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="6" cy="8" rx="2" ry="2.7"/><ellipse cx="11" cy="5" rx="2" ry="2.7"/><ellipse cx="17" cy="6" rx="2" ry="2.7"/><ellipse cx="20" cy="11" rx="1.8" ry="2.5"/><path d="M5 18c0-3 4-7 7-7s7 4 7 7c0 5-5 1-7 1s-7 4-7-1Z"/></svg>
-        <span class="wordmark">Busca<strong>Pet</strong></span>
-      </a>
-      <nav class="main-nav" aria-label="Navegação principal">
-        <a href="index.html"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></svg>Início</a>
-        <a href="mapa.html" class="active"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2Z"/><path d="M9 3v16M15 5v16"/></svg>Mapa</a>
-        <a href="cadastro.html" class="post-link"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Publicar</a>
-        <a href="minha-area.html"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2Z"/></svg>Minha área</a>
+      <a class="logo" href="index.html">🐾 Busca<strong>Pet</strong></a>
+      <nav class="main-nav">
+        <a href="index.html">Início</a>
+        <a href="mapa.html" class="active">Mapa</a>
+        <a href="cadastro.html" class="post-link">+ Publicar</a>
+        <a href="minha-area.html">Minha área</a>
       </nav>
     </header>
 
     <div class="page" style="padding: 0;">
       <div class="map-container">
         <div id="mapa"></div>
+        <div id="loading" class="loading-overlay" style="display: none;">Buscando localizações reais...</div>
         
-        <!-- Painel de Filtros (Flutuante) -->
+        <!-- Painel de Filtros -->
         <div class="map-controls">
           <div class="filter-header" id="btn-toggle-filtros">
             <h3>Filtros e Ordenação</h3>
@@ -173,8 +141,7 @@
       </div>
     </div>
 
-    <!-- BOTÃO DE ACESSIBILIDADE -->
-    <button class="btn-acessibilidade" id="btn-acessibilidade" aria-label="Abrir menu de acessibilidade">
+    <button class="btn-acessibilidade" id="btn-acessibilidade">
       <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
     </button>
     <div class="menu-acessibilidade" id="menu-acessibilidade">
@@ -185,10 +152,9 @@
     </div>
   </main>
 
-  <!-- Script do Mapa -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // Acessibilidade
+    // Lógica de Acessibilidade
     const btnAcess = document.getElementById('btn-acessibilidade');
     const menuAcess = document.getElementById('menu-acessibilidade');
     if (btnAcess && menuAcess) {
@@ -216,7 +182,7 @@
       });
     }
 
-    // Lógica do Mapa e Filtros
+    // Lógica Principal do Mapa
     document.addEventListener('DOMContentLoaded', async () => {
       const mapa = L.map('mapa', { zoomControl: false }).setView([-20.4697, -54.6201], 12);
       L.control.zoom({ position: 'bottomright' }).addTo(mapa);
@@ -231,30 +197,38 @@
       let regiaoAtiva = 'todos';
       let ordemAtiva = 'recente';
 
-      // Posições aproximadas
-      const posicoes = {
-        'Centro': [-20.465, -54.615],
-        'Leste': [-20.450, -54.580],
-        'Bálsamo': [-20.480, -54.650],
-        'Taveirópolis': [-20.490, -54.630]
-      };
+      // Função para buscar coordenadas REAIS usando a API Nominatim (OpenStreetMap)
+      async function buscarCoordenadas(endereco) {
+        try {
+          // Adiciona "Campo Grande, MS" para garantir que a busca seja na cidade certa
+          const query = encodeURIComponent(`${endereco}, Campo Grande, MS, Brasil`);
+          const url = `https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`;
+          
+          const response = await fetch(url, {
+            headers: { 'User-Agent': 'BuscaPet-Faculdade/1.0' } // Requisito da API
+          });
+          const data = await response.json();
 
-      // Carrega dados do banco
-      try {
-        const response = await fetch('/api/pets');
-        todosOsPets = await response.json();
-        renderizarMapa();
-      } catch (error) {
-        console.error("Erro ao carregar mapa:", error);
+          if (data && data.length > 0) {
+            return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+          }
+        } catch (error) {
+          console.error("Erro na geolocalização:", error);
+        }
+        // Fallback: Se não achar, volta pro centro de Campo Grande
+        return [-20.4697, -54.6201];
       }
 
-      // Função para desenhar os pinos no mapa
-      function renderizarMapa() {
+      // Função para desenhar os pinos
+      async function renderizarMapa() {
         // Limpa marcadores antigos
         marcadores.forEach(m => mapa.removeLayer(m));
         marcadores = [];
 
-        // Filtra os pets
+        // Mostra loading
+        document.getElementById('loading').style.display = 'flex';
+
+        // Filtra
         let petsFiltrados = todosOsPets.filter(pet => {
           const matchTipo = filtroAtivo === 'todos' || pet.status === filtroAtivo;
           const matchRegiao = regiaoAtiva === 'todos' || pet.regiao === regiaoAtiva;
@@ -269,17 +243,15 @@
           return 0;
         });
 
-        // Desenha cada pet
-        petsFiltrados.forEach(pet => {
-          const posicao = posicoes[pet.regiao] || [-20.4697, -54.6201];
-          
-          // Ícone personalizado (Foto ou Emoji)
-          let iconeHtml = '';
-          if (pet.foto_url) {
-            iconeHtml = `<img src="${pet.foto_url}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
-          } else {
-            iconeHtml = `<div style="font-size: 20px; display: flex; align-items: center; justify-content: center; height: 100%;">${pet.especie === 'gato' ? '🐈' : (pet.especie === 'cão' ? '🐶' : '🐾')}</div>`;
-          }
+        // Desenha cada um buscando o endereço real
+        for (const pet of petsFiltrados) {
+          // Tenta usar o bairro + cidade
+          const enderecoBusca = `${pet.bairro || ''} ${pet.regiao || ''} ${pet.cidade || ''}`.trim();
+          const posicao = await buscarCoordenadas(enderecoBusca);
+
+          let iconeHtml = pet.foto_url 
+            ? `<img src="${pet.foto_url}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`
+            : `<div style="font-size: 20px; display: flex; align-items: center; justify-content: center; height: 100%;">${pet.especie === 'gato' ? '🐈' : (pet.especie === 'cão' ? '🐶' : '🐾')}</div>`;
 
           const customIcon = L.divIcon({
             className: 'custom-marker',
@@ -288,58 +260,55 @@
             iconAnchor: [20, 40]
           });
 
-          // Cria o marcador
           const marcador = L.marker(posicao, { icon: customIcon }).addTo(mapa);
           
-          // Popup
           const popupHtml = `
             <div style="text-align: center; min-width: 150px;">
               <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px auto; border: 3px solid ${pet.status === 'encontrado' ? '#18735c' : 'var(--p)'};">
-                ${pet.foto_url 
-                  ? `<img src="${pet.foto_url}" style="width: 100%; height: 100%; object-fit: cover;">` 
-                  : `<div style="background: #eee; font-size: 40px; display: flex; align-items: center; justify-content: center; height: 100%;">${pet.especie === 'gato' ? '🐈' : (pet.especie === 'cão' ? '🐶' : '🐾')}</div>`
-                }
+                ${pet.foto_url ? `<img src="${pet.foto_url}" style="width: 100%; height: 100%; object-fit: cover;">` : `<div style="background: #eee; font-size: 40px; display: flex; align-items: center; justify-content: center; height: 100%;">${pet.especie === 'gato' ? '🐈' : '🐶'}</div>`}
               </div>
               <b style="font-size: 16px; display: block;">${pet.nome}</b>
               <span style="font-size: 12px; color: #666;">${pet.raca || pet.especie}</span><br>
-              <span style="font-size: 12px; color: ${pet.status === 'encontrado' ? '#18735c' : 'var(--p)'}; font-weight: bold;">${pet.status === 'encontrado' ? 'ENCONTRADO' : 'PERDIDO'}</span><br>
+              <span style="font-size: 12px; color: ${pet.status === 'encontrado' ? '#18735c' : 'var(--p)'}; font-weight: bold;">${pet.status.toUpperCase()}</span><br>
               <a href="detalhe.html?id=${pet.id}" style="display: inline-block; margin-top: 8px; color: var(--p); font-weight: bold; font-size: 12px; text-decoration: none;">Ver detalhes ↗</a>
             </div>
           `;
           marcador.bindPopup(popupHtml);
 
-          // Esfera de área (Círculo)
+          // Esfera de área
           const circle = L.circle(posicao, {
             color: pet.status === 'encontrado' ? '#18735c' : '#6d28e8',
             fillColor: pet.status === 'encontrado' ? '#18735c' : '#6d28e8',
             fillOpacity: 0.1,
-            radius: 800, // Raio de 800 metros
+            radius: 800,
             weight: 1
           }).addTo(mapa);
 
           marcadores.push(marcador, circle);
-        });
+        }
+        
+        document.getElementById('loading').style.display = 'none';
       }
 
-      // --- Lógica do Painel de Filtros ---
-      const btnToggle = document.getElementById('btn-toggle-filtros');
-      const bodyFiltros = document.getElementById('filtros-body');
+      // Carrega dados iniciais
+      try {
+        const response = await fetch('/api/pets');
+        todosOsPets = await response.json();
+        await renderizarMapa();
+      } catch (error) {
+        console.error("Erro ao carregar mapa:", error);
+        document.getElementById('loading').style.display = 'none';
+      }
 
-      btnToggle.addEventListener('click', () => {
-        btnToggle.classList.toggle('aberto');
-        bodyFiltros.classList.toggle('aberto');
+      // --- Eventos de Filtro ---
+      document.getElementById('btn-toggle-filtros').addEventListener('click', () => {
+        document.getElementById('btn-toggle-filtros').classList.toggle('aberto');
+        document.getElementById('filtros-body').classList.toggle('aberto');
       });
 
-      document.getElementById('filter-type').addEventListener('change', (e) => {
-        filtroAtivo = e.target.value;
-        renderizarMapa();
-      });
-
-      document.getElementById('filter-region').addEventListener('change', (e) => {
-        regiaoAtiva = e.target.value;
-        renderizarMapa();
-      });
-
+      document.getElementById('filter-type').addEventListener('change', (e) => { filtroAtivo = e.target.value; renderizarMapa(); });
+      document.getElementById('filter-region').addEventListener('change', (e) => { regiaoAtiva = e.target.value; renderizarMapa(); });
+      
       document.querySelectorAll('.order-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('.order-btn').forEach(b => b.classList.remove('active'));
@@ -348,7 +317,6 @@
           renderizarMapa();
         });
       });
-
     });
   </script>
 </body>
