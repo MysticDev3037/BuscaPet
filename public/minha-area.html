@@ -7,6 +7,12 @@
   <link rel="stylesheet" href="style.css" />
   
   <style>
+    /* Esconde o conteúdo principal até verificarmos o login */
+    .app-shell { visibility: hidden; }
+    
+    /* Mostra quando estiver pronto */
+    .app-shell.pronto { visibility: visible; }
+
     .aba-conteudo { display: none; }
     .aba-conteudo.ativa { display: block; }
     
@@ -449,13 +455,17 @@
         });
       }
 
-      // --- VERIFICAÇÃO DE LOGIN COM TOAST ---
+      // --- VERIFICAÇÃO DE LOGIN COM TOAST E SEM FLASH ---
       const usuarioString = localStorage.getItem('usuarioLogado');
+      
       if (!usuarioString) {
         mostrarToast('Você precisa fazer login para acessar esta página.', 'erro');
         setTimeout(() => window.location.href = 'login.html', 2000);
         return;
       }
+
+      // Se está logado, mostra a tela
+      document.querySelector('.app-shell').classList.add('pronto');
 
       let usuario = JSON.parse(usuarioString);
       let novaFotoBase64 = "";
@@ -470,7 +480,6 @@
         avatarTop.textContent = usuario.nome.charAt(0).toUpperCase();
       }
 
-      // Preenche dados do Perfil Social e da Conta
       document.getElementById('perfil-nome-exibicao').textContent = usuario.nome;
       document.getElementById('perfil-email-exibicao').textContent = usuario.email;
       document.getElementById('perfil-nome').value = usuario.nome;
@@ -507,7 +516,6 @@
         });
       });
 
-      // Mostra aba de dados apenas para admin
       if (usuario.role === 'admin' || usuario.role === 'moderador') {
         document.getElementById('menu-dados').style.display = 'flex';
       }
