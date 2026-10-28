@@ -12,7 +12,7 @@
     .map-container {
       display: flex;
       flex-direction: column;
-      height: calc(100vh - 100px);
+      height: calc(100vh - 160px); /* Ajustado para caber o painel */
       margin-top: 10px;
       border-radius: 18px;
       overflow: hidden;
@@ -22,18 +22,18 @@
     }
     #mapa { flex: 1; width: 100%; z-index: 1; }
 
-    /* Painel de Filtros Lateral (Gaveta) */
+    /* Painel de Filtros (Agora fora do mapa, no canto) */
     .map-controls {
       position: absolute;
-      top: 20px;
-      left: 20px;
+      top: 120px; /* Desceu para não pegar a logo */
+      left: 30px;
       background: white;
       border-radius: 12px;
       box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-      z-index: 400;
+      z-index: 1000; /* Fica acima de tudo */
       overflow: hidden;
-      width: 280px;
-      max-width: calc(100vw - 40px);
+      width: 260px;
+      max-width: calc(100vw - 60px);
     }
     
     .filter-header {
@@ -118,46 +118,46 @@
     </header>
 
     <div class="page" style="padding: 0;">
-      <div class="map-container">
-        <div id="mapa"></div>
-        <div id="loading" class="loading-overlay" style="display: none;">Buscando localizações reais...</div>
+      <!-- Painel de Filtros (Movido para fora do mapa) -->
+      <div class="map-controls">
+        <div class="filter-header" id="btn-toggle-filtros">
+          <h3>Filtros</h3>
+          <span>▼</span>
+        </div>
         
-        <!-- Painel de Filtros -->
-        <div class="map-controls">
-          <div class="filter-header" id="btn-toggle-filtros">
-            <h3>Filtros</h3>
-            <span>▼</span>
+        <div class="filter-body" id="filtros-body">
+          <div class="filter-group">
+            <label>Tipo de Alerta</label>
+            <select id="filter-type">
+              <option value="todos">Todos</option>
+              <option value="perdido">Perdidos</option>
+              <option value="encontrado">Encontrados</option>
+            </select>
           </div>
-          
-          <div class="filter-body" id="filtros-body">
-            <div class="filter-group">
-              <label>Tipo de Alerta</label>
-              <select id="filter-type">
-                <option value="todos">Todos</option>
-                <option value="perdido">Perdidos</option>
-                <option value="encontrado">Encontrados</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <label>Região</label>
-              <select id="filter-region">
-                <option value="todos">Todas as regiões</option>
-                <option value="Centro">Centro</option>
-                <option value="Leste">Leste</option>
-                <option value="Bálsamo">Bálsamo</option>
-                <option value="Taveirópolis">Taveirópolis</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <label>Ordenar por</label>
-              <div class="order-btn-group">
-                <button class="order-btn active" data-order="recente">Recentes</button>
-                <button class="order-btn" data-order="antigo">Antigos</button>
-                <button class="order-btn" data-order="recompensa">Recompensa</button>
-              </div>
+          <div class="filter-group">
+            <label>Região</label>
+            <select id="filter-region">
+              <option value="todos">Todas as regiões</option>
+              <option value="Centro">Centro</option>
+              <option value="Leste">Leste</option>
+              <option value="Bálsamo">Bálsamo</option>
+              <option value="Taveirópolis">Taveirópolis</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Ordenar por</label>
+            <div class="order-btn-group">
+              <button class="order-btn active" data-order="recente">Recentes</button>
+              <button class="order-btn" data-order="antigo">Antigos</button>
+              <!-- Botão de Recompensa REMOVIDO AQUI -->
             </div>
           </div>
         </div>
+      </div>
+
+      <div class="map-container">
+        <div id="mapa"></div>
+        <div id="loading" class="loading-overlay" style="display: none;">Buscando localizações...</div>
       </div>
     </div>
 
@@ -241,10 +241,10 @@
           return matchTipo && matchRegiao;
         });
 
+        // Ordenação (Recompensa removida)
         petsFiltrados.sort((a, b) => {
           if (ordemAtiva === 'recente') return new Date(b.data_criacao) - new Date(a.data_criacao);
           if (ordemAtiva === 'antigo') return new Date(a.data_criacao) - new Date(b.data_criacao);
-          if (ordemAtiva === 'recompensa') return (b.recompensa || 0) - (a.recompensa || 0);
           return 0;
         });
 
