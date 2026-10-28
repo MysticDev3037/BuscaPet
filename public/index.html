@@ -5,6 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BuscaPet | Encontre, ajude, conecte</title>
   <link rel="stylesheet" href="style.css" />
+  
+  <style>
+    /* Estilo do botão flutuante de acessibilidade */
+    .btn-acessibilidade {
+      position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px;
+      border-radius: 50%; background: var(--p); color: white; border: none;
+      cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; transition: transform 0.2s;
+    }
+    .btn-acessibilidade:hover { transform: scale(1.1); }
+    .menu-acessibilidade {
+      position: fixed; bottom: 95px; right: 30px; background: white;
+      border: 1px solid var(--line); border-radius: 16px; padding: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none;
+      flex-direction: column; gap: 8px; z-index: 999; width: 200px;
+    }
+    .menu-acessibilidade.aberto { display: flex; }
+    .menu-acessibilidade h4 { margin: 0 0 5px 0; font-size: 14px; color: #666; text-align: center; }
+    .menu-acessibilidade button {
+      background: #f4f4f8; border: none; padding: 10px; border-radius: 8px;
+      cursor: pointer; font-weight: bold; color: var(--ink); text-align: left;
+    }
+    .menu-acessibilidade button:hover { background: #e0d4fc; }
+
+    /* Botão de Favoritos Flutuante */
+    .float-btn {
+      position: fixed; bottom: 100px; right: 30px; width: 55px; height: 55px;
+      border-radius: 50%; background: #e11d48; color: white; border: none;
+      cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; transition: transform 0.2s; text-decoration: none;
+    }
+    .float-btn:hover { transform: scale(1.1); }
+  </style>
 </head>
 <body>
   <main class="phone app-shell">
@@ -17,7 +52,7 @@
         <span class="wordmark">Busca<strong>Pet</strong></span>
       </a>
       
-            <nav class="main-nav" aria-label="Navegação principal">
+      <nav class="main-nav" aria-label="Navegação principal">
         <a href="index.html" class="active">
           <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></svg>Início
         </a>
@@ -27,30 +62,22 @@
         <a href="cadastro.html" class="post-link">
           <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Publicar
         </a>
-        <!-- BOTÃO DE FAVORITOS ADICIONADO AQUI -->
-        <a href="favoritos.html">
-          <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.8 4.7a5.4 5.4 0 0 0-7.6 0L12 5.9l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.7a5.4 5.4 0 0 0 0-7.6Z"/></svg>Favoritos
-        </a>
+        <!-- Botão de Favoritos REMOVIDO daqui -->
         <a href="minha-area.html">
           <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2Z"/></svg>Minha área
         </a>
       </nav>
 
-            <div class="header-links">
+      <div class="header-links">
         <a href="servicos.html">Rede de apoio</a>
         <span class="mode-pill">Tutor de pet</span>
       </div>
     </header>
 
-    <!-- BARRA DE ACESSIBILIDADE -->
-    <    <!-- Botão flutuante de acessibilidade -->
+    <!-- BOTÃO DE ACESSIBILIDADE (FIXO) -->
     <button class="btn-acessibilidade" id="btn-acessibilidade" aria-label="Abrir menu de acessibilidade">
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-        <path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/>
-      </svg>
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
     </button>
-
-    <!-- Menu de acessibilidade (escondido por padrão) -->
     <div class="menu-acessibilidade" id="menu-acessibilidade">
       <h4>Acessibilidade</h4>
       <button type="button" data-action="text-size" data-value="smaller">A− Diminuir texto</button>
@@ -89,7 +116,7 @@
                   <option value="encontrado">Encontrados</option>
                 </select>
               </label>
-                          <label>Região de Campo Grande
+              <label>Região de Campo Grande
                 <select id="filter-region">
                   <option value="todos">Todas as regiões</option>
                   <option value="Centro">Centro</option>
@@ -97,7 +124,6 @@
                   <option value="Bálsamo">Bálsamo</option>
                   <option value="Taveirópolis">Taveirópolis</option>
                   <option value="Coophavila">Coophavila</option>
-                  <!-- Adicione outros bairros se quiser -->
                 </select>
               </label>
             </div>
@@ -106,7 +132,8 @@
           <div class="support-note">
             <b>Você pode fazer a diferença.</b>
             <p>Viu um pet parecido? Abra o alerta e registre uma pista.</p>
-            <a href="#">Conhecer a rede de apoio ↗</a>
+            <!-- Link corrigido para servicos.html -->
+            <a href="servicos.html">Conhecer a rede de apoio ↗</a>
           </div>
         </aside>
 
@@ -122,12 +149,16 @@
             <span id="result-count" role="status" aria-live="polite">Carregando...</span>
           </div>
           
-          <!-- Cards injetados pelo JS -->
           <div id="results" class="list alert-grid"></div>
         </div>
       </div>
     </div>
   </main>
+
+  <!-- BOTÃO DE FAVORITOS FLUTUANTE -->
+  <a href="favoritos.html" class="float-btn" title="Meus Favoritos">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.8 4.7a5.4 5.4 0 0 0-7.6 0L12 5.9l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.7a5.4 5.4 0 0 0 0-7.6Z"/></svg>
+  </a>
 
   <script src="app.js"></script>
 </body>
