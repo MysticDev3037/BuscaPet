@@ -4541,3 +4541,47 @@ html.a11y-high-contrast textarea {
     padding: 20px 15px;
   }
 }
+
+/* =========================================
+   AJUSTES DE RESPONSIVIDADE PARA CELULAR
+   ========================================= */
+@media (max-width: 768px) {
+  body { padding: 0; }
+  
+  .app-header {
+    flex-direction: column !important;
+    padding: 15px !important;
+    gap: 15px !important;
+    align-items: center !important;
+  }
+  .main-nav {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px !important;
+  }
+  .main-nav a {
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+  }
+  .header-links { display: none !important; }
+
+  .browse-layout { grid-template-columns: 1fr !important; }
+  .browse-sidebar { display: none !important; }
+  .list.alert-grid { grid-template-columns: 1fr !important; }
+  .catalog-intro { flex-direction: column !important; text-align: center !important; gap: 15px !important; }
+
+  .dashboard-layout { display: flex !important; flex-direction: column !important; }
+  .profile-sidebar { 
+    position: static !important; 
+    width: 100% !important; 
+    height: auto !important; 
+    margin-bottom: 20px !important; 
+    border-radius: 12px !important;
+  }
+
+  .detail-layout { grid-template-columns: 1fr !important; }
+  .detail-photo { height: 300px !important; }
+
+  .login-page, .signup-page { padding: 10px !important; }
+  .login-panel { padding: 20px 15px !important; }
+}
