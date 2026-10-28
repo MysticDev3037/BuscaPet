@@ -9,6 +9,36 @@
     .foto-preview { width: 120px; height: 120px; border-radius: 12px; object-fit: cover; background: #eee; border: 2px solid var(--line); display: none; margin-top: 10px;}
     .foto-preview.show { display: block; }
     .hidden { display: none !important; }
+
+    /* Estilo do Toast (Notificação) */
+    .toast-container {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #2c1847;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      font-size: 15px;
+      font-weight: 500;
+      z-index: 9999;
+      opacity: 0;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: 90%;
+      text-align: center;
+    }
+    .toast-container.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    .toast-container.error {
+      background: #a92b48;
+    }
   </style>
 </head>
 <body>
@@ -110,6 +140,22 @@
   <script>
     let fotoBase64 = "";
 
+    // --- FUNÇÃO TOAST (Notificação Bonita) ---
+    function mostrarToast(mensagem, tipo = 'sucesso') {
+      let toast = document.getElementById('toast-global');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast-global';
+        document.body.appendChild(toast);
+      }
+      toast.className = `toast-container show ${tipo === 'erro' ? 'error' : ''}`;
+      toast.innerHTML = `<span>${tipo === 'erro' ? '⚠️' : '✅'}</span> ${mensagem}`;
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
     // 1. ESCONDER/MOSTRAR TELAS
     function mostrarFormulario(tipo) {
       document.getElementById('tela-escolha').classList.add('hidden');
@@ -119,16 +165,16 @@
       if (tipo === 'encontrado') {
         document.getElementById('titulo-form').textContent = 'Encontrei um Pet';
         document.getElementById('subtitulo-form').textContent = 'Informe os dados do animal que você encontrou.';
-        document.getElementById('campo-associar').classList.remove('hidden'); // Mostra o campo
-        carregarPetsParaAssociar(); // Preenche a lista
+        document.getElementById('campo-associar').classList.remove('hidden');
+        carregarPetsParaAssociar();
       } else {
         document.getElementById('titulo-form').textContent = 'Perdi meu Pet';
         document.getElementById('subtitulo-form').textContent = 'Publique as informações do seu animal desaparecido.';
-        document.getElementById('campo-associar').classList.add('hidden'); // Esconde
+        document.getElementById('campo-associar').classList.add('hidden');
       }
     }
 
-    // 2. CARREGAR PETS PARA ASSOCIAR (Só os perdidos)
+    // 2. CARREGAR PETS PARA ASSOCIAR
     async function carregarPetsParaAssociar() {
       const select = document.getElementById('pet-associado');
       select.innerHTML = '<option value="">Nenhum</option>';
@@ -156,21 +202,21 @@
       e.target.value = v;
     });
 
-    // 4. PREVIEW DA FOTO COM PROTEÇÃO
+    // 4. PREVIEW DA FOTO
     document.getElementById('foto-input').addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
 
       if (file.size > 2 * 1024 * 1024) {
-        alert('A foto é muito grande. Escolha uma imagem de até 2MB.');
+        mostrarToast('A foto é muito grande. Escolha uma imagem de até 2MB.', 'erro');
         e.target.value = '';
-        fotoBase64 = ''; // Limpa a variável
+        fotoBase64 = '';
         return;
       }
 
       const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
       if (!tiposPermitidos.includes(file.type)) {
-        alert('Formato inválido. Envie apenas JPG, PNG ou WebP.');
+        mostrarToast('Formato inválido. Envie apenas JPG, PNG ou WebP.', 'erro');
         e.target.value = '';
         fotoBase64 = '';
         return;
@@ -190,16 +236,15 @@
     document.getElementById('form-pet').addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // TRAVA DE SEGURANÇA: Exige foto
       if (!fotoBase64) {
-        alert('Por favor, adicione uma foto do pet. Isso é essencial para o reencontro!');
+        mostrarToast('Por favor, adicione uma foto do pet.', 'erro');
         return;
       }
 
       const usuarioString = localStorage.getItem('usuarioLogado');
       if (!usuarioString) {
-        alert('Você precisa estar logado para publicar um alerta!');
-        window.location.href = 'login.html';
+        mostrarToast('Você precisa estar logado para publicar.', 'erro');
+        setTimeout(() => window.location.href = 'login.html', 2000);
         return;
       }
 
@@ -212,7 +257,7 @@
         idade: document.getElementById('idade').value,
         cidade: document.getElementById('cidade').value,
         regiao: document.getElementById('regiao').value,
-        recompensa: 0, // Recompensa removida
+        recompensa: 0,
         descricao: document.getElementById('descricao').value,
         status: document.getElementById('tipo-alerta').value,
         foto_url: fotoBase64,
@@ -220,7 +265,6 @@
         usuario_id: usuarioLogado.id
       };
 
-      // Se for encontrado e tiver associação, adiciona na descrição
       const associado = document.getElementById('pet-associado').value;
       if (associado) {
         novoPet.descricao += `\n\n(Aviso: Este pet pode ser o ID ${associado} procurado).`;
@@ -234,14 +278,14 @@
         });
 
         if (response.ok) {
-          alert('Pet publicado com sucesso!');
-          window.location.href = 'index.html';
+          mostrarToast('Pet publicado com sucesso!');
+          setTimeout(() => window.location.href = 'index.html', 2000);
         } else {
-          alert('Erro ao publicar pet.');
+          mostrarToast('Erro ao publicar pet.', 'erro');
         }
       } catch (error) {
         console.error(error);
-        alert('Erro de conexão.');
+        mostrarToast('Erro de conexão.', 'erro');
       }
     });
   </script>
