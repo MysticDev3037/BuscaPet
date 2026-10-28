@@ -8,13 +8,17 @@
   <style>
     .foto-preview { width: 120px; height: 120px; border-radius: 12px; object-fit: cover; background: #eee; border: 2px solid var(--line); display: none; margin-top: 10px;}
     .foto-preview.show { display: block; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
   <main class="phone app-shell">
     
     <header class="app-header">
-      <a class="logo" href="index.html">🐾 Busca<strong>Pet</strong></a>
+      <a class="logo" href="index.html" aria-label="BuscaPet, início">
+        <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="6" cy="8" rx="2" ry="2.7"/><ellipse cx="11" cy="5" rx="2" ry="2.7"/><ellipse cx="17" cy="6" rx="2" ry="2.7"/><ellipse cx="20" cy="11" rx="1.8" ry="2.5"/><path d="M5 18c0-3 4-7 7-7s7 4 7 7c0 5-5 1-7 1s-7 4-7-1Z"/></svg>
+        <span class="wordmark">Busca<strong>Pet</strong></span>
+      </a>
       <nav class="main-nav">
         <a href="index.html">Início</a>
         <a href="mapa.html">Mapa</a>
@@ -25,60 +29,134 @@
 
     <div class="page narrow form-page">
       <a href="index.html" class="back-link">‹ Voltar</a>
-      <h1>Publicar um Alerta</h1>
-      <p class="intro">Preencha os dados do pet abaixo.</p>
+      
+      <!-- TELA 1: ESCOLHA -->
+      <div id="tela-escolha">
+        <h1>Publicar um Alerta</h1>
+        <p class="intro">O que você gostaria de fazer?</p>
+        <div class="choices" style="margin-top: 20px;">
+          <a class="choice" href="#" onclick="mostrarFormulario('perdido')">
+            <div class="choiceicon">🔍</div>
+            <div>
+              <h3>Perdi meu pet</h3>
+              <p>Solicitar a busca de um animal desaparecido.</p>
+            </div>
+          </a>
+          <a class="choice" href="#" onclick="mostrarFormulario('encontrado')">
+            <div class="choiceicon">❤️</div>
+            <div>
+              <h3>Encontrei um pet</h3>
+              <p>Informar que encontrei um animal na rua.</p>
+            </div>
+          </a>
+        </div>
+      </div>
 
-      <form id="form-pet" class="form">
-        <div class="form-grid">
-          <label>Nome do Pet *<input class="control" type="text" id="nome" required></label>
-          <label>Espécie *
-            <select class="control" id="especie" required>
-              <option value="cão">Cão</option>
-              <option value="gato">Gato</option>
-              <option value="outro">Outro</option>
-            </select>
-          </label>
-          <label>Raça<input class="control" type="text" id="raca"></label>
-          <label>Idade<input class="control" type="number" id="idade"></label>
-          <label>Cidade *
-  <input class="control" type="text" id="cidade" value="Campo Grande - MS" readonly style="background-color: #f0f0f0; cursor: not-allowed;">
-</label>
-<label>Contato para WhatsApp (opcional)
-            <input class="control" type="tel" id="contato" placeholder="(67) 99999-9999">
-          </label>
-          <label>Região/Bairro *<input class="control" type="text" id="regiao" required></label>
-          <label style="display: none;">Recompensa (R$)
-  <input class="control" type="number" id="recompensa" step="0.01">
-</label>
-          <label>Status
-            <select class="control" id="status">
-              <option value="perdido">Perdido</option>
-              <option value="encontrado">Encontrado</option>
-            </select>
-          </label>
+      <!-- TELA 2: FORMULÁRIO -->
+      <div id="tela-formulario" class="hidden">
+        <h1 id="titulo-form">Publicar um Alerta</h1>
+        <p class="intro" id="subtitulo-form">Preencha os dados do pet abaixo.</p>
+
+        <form id="form-pet" class="form">
+          <input type="hidden" id="tipo-alerta" value="perdido">
           
-          <!-- Campo de Foto Adicionado -->
-          <label class="full">Foto do Pet (opcional)
-            <input class="control" type="file" id="foto-input" accept="image/*">
-            <img id="foto-preview" class="foto-preview" alt="Prévia da foto">
-            <span class="hint">JPG, PNG ou WebP, até 2MB.</span>
-          </label>
+          <div class="form-grid">
+            <label>Nome do Pet *<input class="control" type="text" id="nome" required></label>
+            <label>Espécie *
+              <select class="control" id="especie" required>
+                <option value="cão">Cão</option>
+                <option value="gato">Gato</option>
+                <option value="outro">Outro</option>
+              </select>
+            </label>
+            <label>Raça<input class="control" type="text" id="raca"></label>
+            <label>Idade<input class="control" type="number" id="idade"></label>
+            <label>Cidade *
+              <input class="control" type="text" id="cidade" value="Campo Grande - MS" readonly style="background: #eee;">
+            </label>
+            <label>Região/Bairro *<input class="control" type="text" id="regiao" required placeholder="Ex: Centro"></label>
+            
+            <label>Telefone / WhatsApp
+              <input class="control" type="tel" id="contato" placeholder="(67) 99999-9999" maxlength="15">
+            </label>
 
-          <label class="full">Descrição *<textarea class="control" id="descricao" required></textarea></label>
-        </div>
-        
-        <div class="actions">
-          <button type="submit" class="btn primary">Publicar Alerta</button>
-          <a href="index.html" class="btn secondary">Cancelar</a>
-        </div>
-      </form>
+            <!-- CAMPO DE ASSOCIAR (SÓ APARECE SE FOR ENCONTRADO) -->
+            <label id="campo-associar" class="full hidden">Associar a um alerta de busca (opcional)
+              <select class="control" id="pet-associado">
+                <option value="">Nenhum</option>
+              </select>
+            </label>
+
+            <!-- FOTO OBRIGATÓRIA -->
+            <label class="full">Foto do Pet *
+              <input class="control" type="file" id="foto-input" accept="image/*" required>
+              <img id="foto-preview" class="foto-preview" alt="Prévia da foto">
+              <span class="hint">JPG, PNG ou WebP, até 2MB. A foto é obrigatória.</span>
+            </label>
+
+            <label class="full">Descrição *<textarea class="control" id="descricao" required></textarea></label>
+          </div>
+          
+          <div class="actions">
+            <button type="submit" class="btn primary">Publicar Alerta</button>
+            <a href="index.html" class="btn secondary">Cancelar</a>
+          </div>
+        </form>
+      </div>
+
     </div>
   </main>
 
   <script>
     let fotoBase64 = "";
 
-    // Lógica da foto com proteção
+    // 1. ESCONDER/MOSTRAR TELAS
+    function mostrarFormulario(tipo) {
+      document.getElementById('tela-escolha').classList.add('hidden');
+      document.getElementById('tela-formulario').classList.remove('hidden');
+      document.getElementById('tipo-alerta').value = tipo;
+
+      if (tipo === 'encontrado') {
+        document.getElementById('titulo-form').textContent = 'Encontrei um Pet';
+        document.getElementById('subtitulo-form').textContent = 'Informe os dados do animal que você encontrou.';
+        document.getElementById('campo-associar').classList.remove('hidden'); // Mostra o campo
+        carregarPetsParaAssociar(); // Preenche a lista
+      } else {
+        document.getElementById('titulo-form').textContent = 'Perdi meu Pet';
+        document.getElementById('subtitulo-form').textContent = 'Publique as informações do seu animal desaparecido.';
+        document.getElementById('campo-associar').classList.add('hidden'); // Esconde
+      }
+    }
+
+    // 2. CARREGAR PETS PARA ASSOCIAR (Só os perdidos)
+    async function carregarPetsParaAssociar() {
+      const select = document.getElementById('pet-associado');
+      select.innerHTML = '<option value="">Nenhum</option>';
+      try {
+        const response = await fetch('/api/pets');
+        const pets = await response.json();
+        const perdidos = pets.filter(p => p.status === 'perdido');
+        
+        perdidos.forEach(pet => {
+          const option = document.createElement('option');
+          option.value = pet.id;
+          option.textContent = `${pet.nome} (${pet.raca || pet.especie}) - ${pet.regiao}`;
+          select.appendChild(option);
+        });
+      } catch (error) {
+        console.error("Erro ao carregar pets:", error);
+      }
+    }
+
+    // 3. MÁSCARA DE TELEFONE
+    document.getElementById('contato').addEventListener('input', (e) => {
+      let v = e.target.value.replace(/\D/g, '');
+      v = v.replace(/^(\d{2})(\d)/g, '($1) $2');
+      v = v.replace(/(\d)(\d{4})$/, '$1-$2');
+      e.target.value = v;
+    });
+
+    // 4. PREVIEW DA FOTO COM PROTEÇÃO
     document.getElementById('foto-input').addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -86,6 +164,7 @@
       if (file.size > 2 * 1024 * 1024) {
         alert('A foto é muito grande. Escolha uma imagem de até 2MB.');
         e.target.value = '';
+        fotoBase64 = ''; // Limpa a variável
         return;
       }
 
@@ -93,6 +172,7 @@
       if (!tiposPermitidos.includes(file.type)) {
         alert('Formato inválido. Envie apenas JPG, PNG ou WebP.');
         e.target.value = '';
+        fotoBase64 = '';
         return;
       }
 
@@ -106,9 +186,15 @@
       reader.readAsDataURL(file);
     });
 
-    // Envio do formulário
+    // 5. ENVIO DO FORMULÁRIO
     document.getElementById('form-pet').addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      // TRAVA DE SEGURANÇA: Exige foto
+      if (!fotoBase64) {
+        alert('Por favor, adicione uma foto do pet. Isso é essencial para o reencontro!');
+        return;
+      }
 
       const usuarioString = localStorage.getItem('usuarioLogado');
       if (!usuarioString) {
@@ -126,12 +212,19 @@
         idade: document.getElementById('idade').value,
         cidade: document.getElementById('cidade').value,
         regiao: document.getElementById('regiao').value,
-        recompensa: parseFloat(document.getElementById('recompensa').value) || 0,
+        recompensa: 0, // Recompensa removida
         descricao: document.getElementById('descricao').value,
-        status: document.getElementById('status').value,
-        foto_url: fotoBase64, // Envia a imagem
+        status: document.getElementById('tipo-alerta').value,
+        foto_url: fotoBase64,
+        contato: document.getElementById('contato').value,
         usuario_id: usuarioLogado.id
       };
+
+      // Se for encontrado e tiver associação, adiciona na descrição
+      const associado = document.getElementById('pet-associado').value;
+      if (associado) {
+        novoPet.descricao += `\n\n(Aviso: Este pet pode ser o ID ${associado} procurado).`;
+      }
 
       try {
         const response = await fetch('/api/pets', {
@@ -151,14 +244,6 @@
         alert('Erro de conexão.');
       }
     });
-
-          const novoPet = {
-        // ... outros campos ...
-        recompensa: parseFloat(document.getElementById('recompensa').value) || 0,
-        contato: document.getElementById('contato').value, // <-- NOVO CAMPO AQUI
-        descricao: document.getElementById('descricao').value,
-        // ...
-      };
   </script>
 </body>
 </html>
