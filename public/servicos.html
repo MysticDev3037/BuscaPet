@@ -53,6 +53,16 @@
       z-index: 1;
     }
 
+    /* Botão de Favoritos Flutuante */
+    .float-btn {
+      position: fixed; bottom: 100px; right: 30px; width: 55px; height: 55px;
+      border-radius: 50%; background: #e11d48; color: white; border: none;
+      cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; transition: transform 0.2s; text-decoration: none;
+    }
+    .float-btn:hover { transform: scale(1.1); }
+
     /* Estilo do botão flutuante de acessibilidade */
     .btn-acessibilidade {
       position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px;
@@ -90,7 +100,6 @@
         <a href="index.html">Início</a>
         <a href="mapa.html">Mapa</a>
         <a href="cadastro.html" class="post-link">+ Publicar</a>
-        <a href="favoritos.html">Favoritos</a>
         <a href="minha-area.html">Minha Área</a>
       </nav>
       <div class="header-links">
@@ -120,7 +129,7 @@
             <p class="destaque">💉 Vacinação &nbsp; ◉ Ração &nbsp; ✂ Tosa &nbsp; ♧ Cirurgia</p>
             <a href="https://wa.me/556732227840" target="_blank" class="btn primary" style="margin-top: 15px; width: auto; display: inline-flex; padding: 10px 20px;">Chamar no WhatsApp</a>
           </div>
-          <div id="mapa-univet" class="mini-mapa"></div>
+          <div id="mapa-univet" class="mini-mapa" data-endereco="R. Sete de Setembro, 2213 - Centro, Campo Grande - MS"></div>
         </article>
 
         <!-- Card 2 -->
@@ -134,7 +143,7 @@
             <p class="destaque">◉ Ração &nbsp; ⌁ Acessórios &nbsp; ✂ Banho e Tosa</p>
             <a href="https://wa.me/556733211234" target="_blank" class="btn primary" style="margin-top: 15px; width: auto; display: inline-flex; padding: 10px 20px;">Chamar no WhatsApp</a>
           </div>
-          <div id="mapa-anjos" class="mini-mapa"></div>
+          <div id="mapa-anjos" class="mini-mapa" data-endereco="Av. Afonso Pena, 4000 - Centro, Campo Grande - MS"></div>
         </article>
 
         <!-- Card 3 -->
@@ -148,7 +157,7 @@
             <p class="destaque">💉 Vacinação &nbsp; ♡ Exames</p>
             <a href="https://wa.me/556730256789" target="_blank" class="btn primary" style="margin-top: 15px; width: auto; display: inline-flex; padding: 10px 20px;">Chamar no WhatsApp</a>
           </div>
-          <div id="mapa-intensive" class="mini-mapa"></div>
+          <div id="mapa-intensive" class="mini-mapa" data-endereco="R. da Paz, 1500 - Vila Taveirópolis, Campo Grande - MS"></div>
         </article>
 
         <!-- Card 4 -->
@@ -162,10 +171,15 @@
             <p class="destaque">✂ Banho e Tosa &nbsp; ♡ Estética</p>
             <a href="https://wa.me/556733890123" target="_blank" class="btn primary" style="margin-top: 15px; width: auto; display: inline-flex; padding: 10px 20px;">Chamar no WhatsApp</a>
           </div>
-          <div id="mapa-auqmia" class="mini-mapa"></div>
+          <div id="mapa-auqmia" class="mini-mapa" data-endereco="R. Bahia, 800 - Jardim dos Estados, Campo Grande - MS"></div>
         </article>
       </div>
     </div>
+
+    <!-- BOTÃO DE FAVORITOS FLUTUANTE -->
+    <a href="favoritos.html" class="float-btn" title="Meus Favoritos">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.8 4.7a5.4 5.4 0 0 0-7.6 0L12 5.9l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.7a5.4 5.4 0 0 0 0-7.6Z"/></svg>
+    </a>
 
     <!-- BOTÃO DE ACESSIBILIDADE -->
     <button class="btn-acessibilidade" id="btn-acessibilidade" aria-label="Abrir menu de acessibilidade">
@@ -177,7 +191,6 @@
       <button type="button" data-action="text-size" data-value="larger">A+ Aumentar texto</button>
       <button type="button" data-action="contrast">◐ Alto contraste</button>
     </div>
-
   </main>
 
   <!-- Script do Mapa -->
@@ -211,25 +224,39 @@
       });
     }
 
-    // Lógica do Mapa
-    function criarMiniMapa(idElemento, lat, lng, nomeLocal) {
-      const mapa = L.map(idElemento, {
-        zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false
-      }).setView([lat, lng], 15);
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapa);
-
-      const marcador = L.marker([lat, lng]).addTo(mapa);
-      marcador.bindPopup(`<b>${nomeLocal}</b>`).openPopup();
-
-      setTimeout(() => mapa.invalidateSize(), 200);
+    // Função para buscar coordenadas reais do endereço
+    async function buscarEnderecoReal(endereco) {
+      try {
+        const query = encodeURIComponent(endereco);
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`;
+        const res = await fetch(url, { headers: { 'User-Agent': 'BuscaPet-Faculdade/1.0' } });
+        const data = await res.json();
+        if (data && data.length > 0) {
+          return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+        }
+      } catch (e) { console.error("Erro ao buscar endereço:", e); }
+      return [-20.4697, -54.6201]; // Fallback
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      criarMiniMapa('mapa-univet', -20.4428, -54.6465, 'UniVet Clínica');
-      criarMiniMapa('mapa-anjos', -20.4595, -54.6170, 'Pet Shop Anjos');
-      criarMiniMapa('mapa-intensive', -20.4910, -54.5950, 'Vet Intensive');
-      criarMiniMapa('mapa-auqmia', -20.4505, -54.6050, 'AuQmia Banho e Tosa');
+    // Cria os mini-mapas com as coordenadas reais
+    document.addEventListener('DOMContentLoaded', async () => {
+      const mapas = document.querySelectorAll('.mini-mapa');
+      
+      for (const div of mapas) {
+        const endereco = div.dataset.endereco;
+        const coords = await buscarEnderecoReal(endereco);
+        
+        const mapa = L.map(div.id, {
+          zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false
+        }).setView(coords, 16);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapa);
+
+        const marcador = L.marker(coords).addTo(mapa);
+        marcador.bindPopup(`<b>${endereco.split('-')[0]}</b>`).openPopup();
+
+        setTimeout(() => mapa.invalidateSize(), 300);
+      }
     });
   </script>
 </body>
