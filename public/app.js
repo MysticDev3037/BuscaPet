@@ -3,48 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let todosOsPets = [];
 
   // ==========================================
-  // 1. ACESSIBILIDADE (Botão flutuante)
-  // ==========================================
-  const btnAcess = document.getElementById('btn-acessibilidade');
-  const menuAcess = document.getElementById('menu-acessibilidade');
-
-  if (btnAcess && menuAcess) {
-    // Abre e fecha o menu
-    btnAcess.addEventListener('click', () => {
-      menuAcess.classList.toggle('aberto');
-    });
-
-    // Fecha se clicar fora
-    document.addEventListener('click', (e) => {
-      if (!btnAcess.contains(e.target) && !menuAcess.contains(e.target)) {
-        menuAcess.classList.remove('aberto');
-      }
-    });
-
-    // Ações dos botões
-    menuAcess.querySelectorAll('button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const action = btn.dataset.action;
-        const value = btn.dataset.value;
-
-        if (action === 'text-size') {
-          if (value === 'larger') {
-            document.documentElement.classList.remove('a11y-small-text');
-            document.documentElement.classList.toggle('a11y-large-text');
-          } else {
-            document.documentElement.classList.remove('a11y-large-text');
-            document.documentElement.classList.toggle('a11y-small-text');
-          }
-        } else if (action === 'contrast') {
-          const enabled = document.documentElement.classList.toggle('a11y-high-contrast');
-          btn.setAttribute('aria-pressed', String(enabled));
-        }
-      });
-    });
-  }
-
-  // ==========================================
-  // 2. RENDERIZAR OS CARDS DOS PETS
+  // 1. RENDERIZAR OS CARDS DOS PETS
   // ==========================================
   function renderizarPets(pets) {
     const lista = document.getElementById('results');
@@ -62,10 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if(contador) contador.textContent = `${pets.length} alertas encontrados`;
 
     pets.forEach(pet => {
-      const emoji = pet.especie === 'gato' ? '🐈' : (pet.especie === 'cão' ? '🐶' : '🐾');
+      // Se o pet tem foto no banco, usa ela. Senão, usa o emoji.
       const fotoHtml = pet.foto_url 
         ? `<img src="${pet.foto_url}" alt="${pet.nome}" style="width:100%; height:100%; object-fit:cover;">` 
-        : emoji;
+        : (pet.especie === 'gato' ? '🐈' : (pet.especie === 'cão' ? '🐶' : '🐾'));
 
       const recompensa = pet.recompensa > 0 ? `R$ ${Number(pet.recompensa).toFixed(2).replace('.', ',')}` : 'Sem recompensa';
       const tagClass = pet.status === 'encontrado' ? 'tag found' : 'tag';
@@ -111,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // 3. LÓGICA DOS FILTROS
+  // 2. LÓGICA DOS FILTROS
   // ==========================================
   function aplicarFiltros() {
     const busca = document.getElementById('search-input')?.value.toLowerCase() || '';
@@ -120,15 +79,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const especieAtiva = document.querySelector('[data-especie].on')?.dataset.especie || 'todos';
 
     const filtrados = todosOsPets.filter(pet => {
+      // Filtro de texto (nome, raça, cidade)
       const textoMatch = 
         pet.nome.toLowerCase().includes(busca) || 
         (pet.raca || '').toLowerCase().includes(busca) || 
-        'campo grande'.includes(busca);
+        (pet.cidade || '').toLowerCase().includes(busca);
       
+      // Filtro de tipo (perdido/encontrado)
       const tipoMatch = tipo === 'todos' || pet.status === tipo;
+      
+      // Filtro de região
       const regiaoMatch = regiao === 'todos' || pet.regiao === regiao;
       
-      // Ajuste para garantir que 'cão' e 'cao' funcionem (removendo acentos)
+      // Filtro de espécie (removendo acentos)
       const especiePet = pet.especie.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
       const especieFiltro = especieAtiva.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
       const especieMatch = especieAtiva === 'todos' || especiePet === especieFiltro;
@@ -140,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // 4. BUSCAR DADOS NO BANCO
+  // 3. BUSCAR DADOS NO BANCO
   // ==========================================
   async function carregarPets() {
     try {
@@ -153,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // 5. EVENTOS
+  // 4. EVENTOS
   // ==========================================
   document.getElementById('search-input')?.addEventListener('input', aplicarFiltros);
   document.getElementById('filter-type')?.addEventListener('change', aplicarFiltros);
