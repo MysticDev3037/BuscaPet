@@ -3,174 +3,248 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BuscaPet | Publicar Pet</title>
+  <title>BuscaPet | Cadastro</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    .foto-preview { width: 120px; height: 120px; border-radius: 12px; object-fit: cover; background: #eee; border: 2px solid var(--line); display: none; margin-top: 10px;}
+    .password-wrapper { position: relative; }
+    .password-wrapper input { padding-right: 40px; }
+    .toggle-password {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; font-size: 18px; color: #777;
+    }
+    .error-msg { color: #a82442; font-size: 12px; margin-top: 4px; display: none; }
+    .error-msg.show { display: block; }
+    .success-msg { color: #18735c; font-size: 12px; margin-top: 4px; display: none; }
+    .success-msg.show { display: block; }
+    .foto-preview-container { display: flex; align-items: center; gap: 15px; margin-top: 10px; }
+    .foto-preview {
+      width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
+      background: #eee; border: 2px solid var(--line); display: none;
+    }
     .foto-preview.show { display: block; }
-    .hidden { display: none !important; }
+
+    /* Estilo do Toast (Notificação) */
+    .toast-container {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+      background: #2c1847; color: white; padding: 15px 25px; border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3); font-size: 15px; font-weight: 500;
+      z-index: 9999; opacity: 0; transition: all 0.3s ease; display: flex;
+      align-items: center; gap: 10px; max-width: 90%; text-align: center;
+    }
+    .toast-container.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast-container.error { background: #a92b48; }
   </style>
 </head>
 <body>
   <main class="phone app-shell">
     
     <header class="app-header">
-      <a class="logo" href="index.html">🐾 Busca<strong>Pet</strong></a>
+      <a class="logo" href="index.html" aria-label="BuscaPet, início">
+        <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="6" cy="8" rx="2" ry="2.7"/><ellipse cx="11" cy="5" rx="2" ry="2.7"/><ellipse cx="17" cy="6" rx="2" ry="2.7"/><ellipse cx="20" cy="11" rx="1.8" ry="2.5"/><path d="M5 18c0-3 4-7 7-7s7 4 7 7c0 5-5 1-7 1s-7 4-7-1Z"/></svg>
+        <span class="wordmark">Busca<strong>Pet</strong></span>
+      </a>
       <nav class="main-nav">
         <a href="index.html">Início</a>
         <a href="mapa.html">Mapa</a>
-        <a href="cadastro.html" class="post-link active">+ Publicar</a>
+        <a href="cadastro.html" class="post-link">+ Publicar</a>
         <a href="minha-area.html">Minha Área</a>
       </nav>
     </header>
 
-    <div class="page narrow form-page">
-      <a href="index.html" class="back-link">‹ Voltar</a>
-      
-      <!-- TELA 1: ESCOLHA -->
-      <div id="tela-escolha">
-        <h1>Publicar um Alerta</h1>
-        <p class="intro">O que você gostaria de fazer?</p>
-        <div class="choices" style="margin-top: 20px;">
-          <a class="choice" href="#" onclick="mostrarFormulario('perdido')">
-            <div class="choiceicon">🔍</div>
-            <div>
-              <h3>Perdi meu pet</h3>
-              <p>Solicitar a busca de um animal desaparecido.</p>
-            </div>
-          </a>
-          <a class="choice" href="#" onclick="mostrarFormulario('encontrado')">
-            <div class="choiceicon">❤️</div>
-            <div>
-              <h3>Encontrei um pet</h3>
-              <p>Informar que encontrei um animal na rua.</p>
-            </div>
-          </a>
-        </div>
-      </div>
+    <div class="page login-page signup-page">
+      <section class="login-panel login-panel-signup">
+        <h1>Cadastro de tutor de pet</h1>
+        <p class="intro">Crie seu próprio acesso como responsável por um animal.</p>
 
-      <!-- TELA 2: FORMULÁRIO -->
-      <div id="tela-formulario" class="hidden">
-        <h1 id="titulo-form">Publicar um Alerta</h1>
-        <p class="intro" id="subtitulo-form">Preencha os dados do pet abaixo.</p>
-
-        <form id="form-pet" class="form">
-          <input type="hidden" id="tipo-alerta" value="perdido">
+        <form id="form-cadastro" class="form signup-form">
           
-          <div class="form-grid">
-            <label>Nome do Pet *<input class="control" type="text" id="nome" required></label>
-            <label>Espécie *
-              <select class="control" id="especie" required>
-                <option value="cão">Cão</option>
-                <option value="gato">Gato</option>
-                <option value="outro">Outro</option>
-              </select>
-            </label>
-            <label>Raça<input class="control" type="text" id="raca"></label>
-            <label>Idade<input class="control" type="number" id="idade"></label>
-            <label>Cidade *<input class="control" type="text" id="cidade" required value="Campo Grande - MS" readonly style="background: #eee;"></label>
-            <label>Região/Bairro *<input class="control" type="text" id="regiao" required placeholder="Ex: Centro"></label>
+          <div class="form-grid identity-fields">
+            <p class="form-section-title full">Identificação e contato</p>
             
-            <!-- TELEFONE COM MÁSCARA -->
-            <label>Telefone / WhatsApp
-              <input class="control" type="tel" id="contato" placeholder="(67) 99999-9999" maxlength="15">
+            <label>Nome completo *
+              <input class="control" type="text" id="nome" required placeholder="Ex.: Ana Maria da Silva">
+            </label>
+            <label>E-mail *
+              <input class="control" type="email" id="email" required placeholder="nome@exemplo.com">
+            </label>
+            <label>CPF *
+              <input class="control" type="text" id="cpf" required placeholder="000.000.000-00" maxlength="14">
+              <span id="cpf-error" class="error-msg">CPF inválido.</span>
+            </label>
+            <label>Data de Nascimento *
+              <input class="control" type="date" id="data-nascimento" required>
+            </label>
+            <label>Telefone com DDD *
+              <input class="control" type="tel" id="telefone" required placeholder="(67) 99999-9999" maxlength="15">
             </label>
 
-            <!-- CAMPO DE ASSOCIAR (SÓ APARECE SE FOR ENCONTRADO) -->
-            <label id="campo-associar" class="full hidden">Associar a um alerta de busca (opcional)
-              <select class="control" id="pet-associado">
-                <option value="">Nenhum</option>
-                <!-- Opções preenchidas via JS -->
-              </select>
-            </label>
-
-            <!-- FOTO COM PROTEÇÃO -->
-            <label class="full">Foto do Pet (opcional)
+            <label class="full">Foto de perfil (opcional)
               <input class="control" type="file" id="foto-input" accept="image/*">
-              <img id="foto-preview" class="foto-preview" alt="Prévia da foto">
-              <span class="hint">JPG, PNG ou WebP, até 2MB.</span>
+              <div class="foto-preview-container">
+                <img id="foto-preview" class="foto-preview" alt="Prévia da foto">
+                <span class="hint">Escolha uma foto sua ou do seu pet. JPG, PNG.</span>
+              </div>
             </label>
 
-            <label class="full">Descrição *<textarea class="control" id="descricao" required></textarea></label>
+            <p class="form-section-title full">Endereço completo</p>
+            
+            <label>CEP *
+              <input class="control" type="text" id="cep" required placeholder="79000-000" maxlength="9">
+              <span id="cep-status" class="success-msg">CEP encontrado!</span>
+            </label>
+            <label>Rua / Avenida *
+              <input class="control" type="text" id="rua" required>
+            </label>
+            <label>Número *
+              <input class="control" type="text" id="numero" required>
+            </label>
+            <label>Complemento
+              <input class="control" type="text" id="complemento" placeholder="Apto, bloco (opcional)">
+            </label>
+            <label>Bairro *
+              <input class="control" type="text" id="bairro" required>
+            </label>
+            <label>Cidade *
+              <input class="control" type="text" id="cidade" required>
+            </label>
+            <label>Estado (UF) *
+              <input class="control" type="text" id="estado" required maxlength="2" placeholder="MS">
+            </label>
           </div>
+
+          <p class="form-section-title">Criar senha</p>
           
-          <div class="actions">
-            <button type="submit" class="btn primary">Publicar Alerta</button>
-            <a href="index.html" class="btn secondary">Cancelar</a>
+          <label>Senha *
+            <div class="password-wrapper">
+              <input class="control" type="password" id="senha" required minlength="8" placeholder="Mínimo 8 caracteres">
+              <button type="button" class="toggle-password" onclick="toggleSenha('senha', this)">👁️</button>
+            </div>
+            <span id="senha-forca" class="error-msg" style="color: #777;">Use 8+ caracteres, maiúscula, minúscula, número e símbolo.</span>
+          </label>
+
+          <label>Repita a senha *
+            <div class="password-wrapper">
+              <input class="control" type="password" id="confirmar-senha" required placeholder="Digite a senha novamente">
+              <button type="button" class="toggle-password" onclick="toggleSenha('confirmar-senha', this)">👁️</button>
+            </div>
+            <span id="senha-erro" class="error-msg">As senhas não coincidem.</span>
+          </label>
+
+          <div class="actions signup-actions">
+            <button type="submit" class="btn primary">Cadastrar perfil</button>
+            <a href="login.html" class="btn secondary">Voltar para entrar</a>
           </div>
         </form>
-      </div>
-
+      </section>
     </div>
   </main>
 
   <script>
     let fotoBase64 = "";
 
-    // 1. ESCONDER/MOSTRAR TELAS
-    function mostrarFormulario(tipo) {
-      document.getElementById('tela-escolha').classList.add('hidden');
-      document.getElementById('tela-formulario').classList.remove('hidden');
-      document.getElementById('tipo-alerta').value = tipo;
-
-      if (tipo === 'encontrado') {
-        document.getElementById('titulo-form').textContent = 'Encontrei um Pet';
-        document.getElementById('subtitulo-form').textContent = 'Informe os dados do animal que você encontrou.';
-        document.getElementById('campo-associar').classList.remove('hidden'); // Mostra o campo de associar
-        carregarPetsParaAssociar(); // Preenche a lista
-      } else {
-        document.getElementById('titulo-form').textContent = 'Perdi meu Pet';
-        document.getElementById('subtitulo-form').textContent = 'Publique as informações do seu animal desaparecido.';
-        document.getElementById('campo-associar').classList.add('hidden'); // Esconde
+    // --- FUNÇÃO TOAST (Notificação Bonita) ---
+    function mostrarToast(mensagem, tipo = 'sucesso') {
+      let toast = document.getElementById('toast-global');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast-global';
+        document.body.appendChild(toast);
       }
+      toast.className = `toast-container show ${tipo === 'erro' ? 'error' : ''}`;
+      toast.innerHTML = `<span>${tipo === 'erro' ? '⚠️' : '✅'}</span> ${mensagem}`;
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
     }
 
-    // 2. CARREGAR PETS PARA ASSOCIAR (Só os perdidos)
-    async function carregarPetsParaAssociar() {
-      const select = document.getElementById('pet-associado');
-      select.innerHTML = '<option value="">Nenhum</option>';
-      try {
-        const response = await fetch('/api/pets');
-        const pets = await response.json();
-        const perdidos = pets.filter(p => p.status === 'perdido');
-        
-        perdidos.forEach(pet => {
-          const option = document.createElement('option');
-          option.value = pet.id;
-          option.textContent = `${pet.nome} (${pet.raca || pet.especie}) - ${pet.regiao}`;
-          select.appendChild(option);
-        });
-      } catch (error) {
-        console.error("Erro ao carregar pets:", error);
-      }
-    }
+    // --- MÁSCARAS E CEP ---
+    document.getElementById('cpf').addEventListener('input', (e) => {
+      let v = e.target.value.replace(/\D/g, '');
+      v = v.replace(/(\d{3})(\d)/, '$1.$2');
+      v = v.replace(/(\d{3})(\d)/, '$1.$2');
+      v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+      e.target.value = v;
+    });
 
-    // 3. MÁSCARA DE TELEFONE
-    document.getElementById('contato').addEventListener('input', (e) => {
+    document.getElementById('telefone').addEventListener('input', (e) => {
       let v = e.target.value.replace(/\D/g, '');
       v = v.replace(/^(\d{2})(\d)/g, '($1) $2');
       v = v.replace(/(\d)(\d{4})$/, '$1-$2');
       e.target.value = v;
     });
 
-    // 4. PREVIEW DA FOTO COM PROTEÇÃO
+    document.getElementById('cep').addEventListener('blur', async (e) => {
+      const cep = e.target.value.replace(/\D/g, '');
+      if (cep.length === 8) {
+        try {
+          const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+          const data = await res.json();
+          if (!data.erro) {
+            document.getElementById('rua').value = data.logradouro;
+            document.getElementById('bairro').value = data.bairro;
+            document.getElementById('cidade').value = data.localidade;
+            document.getElementById('estado').value = data.uf;
+            document.getElementById('cep-status').classList.add('show');
+            setTimeout(() => document.getElementById('cep-status').classList.remove('show'), 3000);
+          }
+        } catch (error) { console.error("Erro ao buscar CEP"); }
+      }
+    });
+
+    // --- OLHO MÁGICO ---
+    function toggleSenha(id, btn) {
+      const input = document.getElementById(id);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+      }
+    }
+
+    // --- VALIDAÇÃO DE SENHA ---
+    const senhaInput = document.getElementById('senha');
+    const confirmarInput = document.getElementById('confirmar-senha');
+    const senhaErro = document.getElementById('senha-erro');
+    const senhaForca = document.getElementById('senha-forca');
+
+    senhaInput.addEventListener('input', () => {
+      const val = senhaInput.value;
+      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      if (regex.test(val)) {
+        senhaForca.style.color = '#18735c';
+        senhaForca.textContent = 'Senha forte! ✔️';
+      } else {
+        senhaForca.style.color = '#a82442';
+        senhaForca.textContent = 'Fraca: use 8+ caracteres, maiúscula, minúscula, número e símbolo.';
+      }
+    });
+
+    confirmarInput.addEventListener('input', () => {
+      if (confirmarInput.value !== senhaInput.value) {
+        senhaErro.classList.add('show');
+      } else {
+        senhaErro.classList.remove('show');
+      }
+    });
+
+    // --- FOTO DE PERFIL ---
     document.getElementById('foto-input').addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
-
       if (file.size > 2 * 1024 * 1024) {
-        alert('A foto é muito grande. Escolha uma imagem de até 2MB.');
+        mostrarToast('A foto é muito grande. Escolha uma imagem de até 2MB.', 'erro');
         e.target.value = '';
         return;
       }
-
       const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
       if (!tiposPermitidos.includes(file.type)) {
-        alert('Formato inválido. Envie apenas JPG, PNG ou WebP.');
+        mostrarToast('Formato inválido. Envie apenas JPG, PNG ou WebP.', 'erro');
         e.target.value = '';
         return;
       }
-
       const reader = new FileReader();
       reader.onload = (event) => {
         fotoBase64 = event.target.result;
@@ -181,57 +255,77 @@
       reader.readAsDataURL(file);
     });
 
-    // 5. ENVIO DO FORMULÁRIO
-    document.getElementById('form-pet').addEventListener('submit', async (e) => {
+    // --- ENVIO DO FORMULÁRIO ---
+    document.getElementById('form-cadastro').addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const usuarioString = localStorage.getItem('usuarioLogado');
-      if (!usuarioString) {
-        alert('Você precisa estar logado para publicar um alerta!');
-        window.location.href = 'login.html';
+      // Validação de CPF (opcional, mas recomendada)
+      const cpfValue = document.getElementById('cpf').value;
+      const validaCPF = (cpf) => {
+        cpf = cpf.replace(/\D/g, '');
+        if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+        let soma = 0, resto;
+        for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i-1, i)) * (11 - i);
+        resto = (soma * 10) % 11;
+        if (resto === 10 || resto === 11) resto = 0;
+        if (resto !== parseInt(cpf.substring(9, 10))) return false;
+        soma = 0;
+        for (let i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i-1, i)) * (12 - i);
+        resto = (soma * 10) % 11;
+        if (resto === 10 || resto === 11) resto = 0;
+        if (resto !== parseInt(cpf.substring(10, 11))) return false;
+        return true;
+      };
+
+      // Descomente a linha abaixo se quiser validar o CPF rigorosamente
+      // if (!validaCPF(cpfValue)) { mostrarToast('CPF inválido.', 'erro'); return; }
+
+      // Validação de senha
+      if (senhaInput.value !== confirmarInput.value) {
+        mostrarToast('As senhas não coincidem.', 'erro');
+        return;
+      }
+      const regexSenha = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      if (!regexSenha.test(senhaInput.value)) {
+        mostrarToast('A senha está fraca. Use 8+ caracteres, maiúscula, minúscula, número e símbolo.', 'erro');
         return;
       }
 
-      const usuarioLogado = JSON.parse(usuarioString);
-
-      const novoPet = {
+      const novoUsuario = {
         nome: document.getElementById('nome').value,
-        especie: document.getElementById('especie').value,
-        raca: document.getElementById('raca').value,
-        idade: document.getElementById('idade').value,
+        email: document.getElementById('email').value,
+        senha: senhaInput.value,
+        cpf: cpfValue,
+        data_nascimento: document.getElementById('data-nascimento').value,
+        telefone: document.getElementById('telefone').value,
+        foto_perfil: fotoBase64,
+        cep: document.getElementById('cep').value,
+        rua: document.getElementById('rua').value,
+        numero: document.getElementById('numero').value,
+        complemento: document.getElementById('complemento').value,
+        bairro: document.getElementById('bairro').value,
         cidade: document.getElementById('cidade').value,
-        regiao: document.getElementById('regiao').value,
-        recompensa: 0, // Recompensa removida (por hora)
-        descricao: document.getElementById('descricao').value,
-        status: document.getElementById('tipo-alerta').value,
-        foto_url: fotoBase64,
-        contato: document.getElementById('contato').value,
-        usuario_id: usuarioLogado.id
+        estado: document.getElementById('estado').value
       };
 
-      // Se for encontrado e tiver associação, envia o ID do pet associado
-      // (Esta parte é apenas para a lógica, por enquanto o backend não usa)
-      const associado = document.getElementById('pet-associado').value;
-      if (associado) {
-        novoPet.descricao += `\n\n(Aviso: Este pet pode ser o ${associado} procurado).`;
-      }
-
       try {
-        const response = await fetch('/api/pets', {
+        const response = await fetch('/api/cadastro', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(novoPet)
+          body: JSON.stringify(novoUsuario)
         });
 
+        const data = await response.json();
+
         if (response.ok) {
-          alert('Pet publicado com sucesso!');
-          window.location.href = 'index.html';
+          mostrarToast('Cadastro realizado com sucesso! Faça login.');
+          setTimeout(() => window.location.href = 'login.html', 2000);
         } else {
-          alert('Erro ao publicar pet.');
+          mostrarToast(data.erro || 'Erro ao cadastrar.', 'erro');
         }
       } catch (error) {
         console.error(error);
-        alert('Erro de conexão.');
+        mostrarToast('Erro de conexão.', 'erro');
       }
     });
   </script>
