@@ -5,11 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BuscaPet | Minha Área</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Estilo do Toast (Notificação) */
+    .toast-container {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+      background: #2c1847; color: white; padding: 15px 25px; border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3); font-size: 15px; font-weight: 500;
+      z-index: 9999; opacity: 0; transition: all 0.3s ease; display: flex;
+      align-items: center; gap: 10px; max-width: 90%; text-align: center;
+    }
+    .toast-container.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast-container.error { background: #a92b48; }
+  </style>
 </head>
 <body>
   <main class="phone app-shell">
     
-    <!-- Cabeçalho Padronizado -->
     <header class="app-header">
       <a class="logo" href="index.html" aria-label="BuscaPet, início">
         <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="6" cy="8" rx="2" ry="2.7"/><ellipse cx="11" cy="5" rx="2" ry="2.7"/><ellipse cx="17" cy="6" rx="2" ry="2.7"/><ellipse cx="20" cy="11" rx="1.8" ry="2.5"/><path d="M5 18c0-3 4-7 7-7s7 4 7 7c0 5-5 1-7 1s-7 4-7-1Z"/></svg>
@@ -19,7 +30,6 @@
         <a href="index.html">Início</a>
         <a href="mapa.html">Mapa</a>
         <a href="cadastro.html" class="post-link">+ Publicar</a>
-        <a href="favoritos.html">Favoritos</a>
         <a href="login.html" class="active">Minha Área</a>
       </nav>
     </header>
@@ -55,6 +65,23 @@
   </main>
 
   <script>
+    // --- FUNÇÃO TOAST (Notificação Bonita) ---
+    function mostrarToast(mensagem, tipo = 'sucesso') {
+      let toast = document.getElementById('toast-global');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast-global';
+        document.body.appendChild(toast);
+      }
+      toast.className = `toast-container show ${tipo === 'erro' ? 'error' : ''}`;
+      toast.innerHTML = `<span>${tipo === 'erro' ? '⚠️' : '✅'}</span> ${mensagem}`;
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+    // --- LÓGICA DE LOGIN ---
     document.getElementById('form-login').addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -71,18 +98,15 @@
         const data = await response.json();
 
         if (response.ok) {
-          // Salva o usuário no navegador
           localStorage.setItem('usuarioLogado', JSON.stringify(data));
-          alert(`Bem-vindo(a), ${data.nome}!`);
-          
-          // CORREÇÃO: Redireciona para a Minha Área em vez da Home
-          window.location.href = 'minha-area.html'; 
+          mostrarToast(`Bem-vindo(a), ${data.nome}!`);
+          setTimeout(() => window.location.href = 'minha-area.html', 1500);
         } else {
-          alert(data.erro || 'E-mail ou senha incorretos.');
+          mostrarToast(data.erro || 'E-mail ou senha incorretos.', 'erro');
         }
       } catch (error) {
         console.error(error);
-        alert('Erro de conexão.');
+        mostrarToast('Erro de conexão.', 'erro');
       }
     });
   </script>
