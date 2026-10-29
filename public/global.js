@@ -11,21 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   divGlobal.innerHTML = `
     <!-- MENU INFERIOR (Navegação) -->
     <nav class="main-nav bottom-nav" aria-label="Navegação principal" style="position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--line); z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);">
-      <a href="index.html" class="${paginaAtual === 'index.html' ? 'active' : ''}" style="display: flex; flex-direction: column; align-items: center; font-size: 10px; color: #716586; text-decoration: none; font-weight: bold;">
-        <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" width="22" height="22"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></svg>
-        Início
-      </a>
-      <a href="mapa.html" class="${paginaAtual === 'mapa.html' ? 'active' : ''}" style="display: flex; flex-direction: column; align-items: center; font-size: 10px; color: #716586; text-decoration: none; font-weight: bold;">
-        <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" width="22" height="22"><path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2Z"/><path d="M9 3v16M15 5v16"/></svg>
-        Mapa
-      </a>
-      <a href="cadastro.html" class="post-link ${paginaAtual === 'cadastro.html' ? 'active' : ''}" style="display: flex; flex-direction: column; align-items: center; font-size: 10px; color: white; text-decoration: none; font-weight: bold; background: var(--p); width: 55px; height: 55px; border-radius: 50%; margin-top: -25px; justify-content: center; box-shadow: 0 5px 15px rgba(109,40,232,0.3);">
-        <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" width="26" height="26" style="margin-top: 5px;"><path d="M12 5v14M5 12h14"/></svg>
-      </a>
-      <a href="minha-area.html" class="${paginaAtual === 'minha-area.html' ? 'active' : ''}" style="display: flex; flex-direction: column; align-items: center; font-size: 10px; color: #716586; text-decoration: none; font-weight: bold;">
-        <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" width="22" height="22"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2Z"/></svg>
-        Minha área
-      </a>
+
     </nav>
 
     <!-- BOTÃO FLUTUANTE: FAVORITOS (Movido para cima) -->
