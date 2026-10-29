@@ -12,7 +12,7 @@
     .map-container {
       display: flex;
       flex-direction: column;
-      height: calc(100vh - 160px); /* Ajustado para caber o painel */
+      height: calc(100vh - 160px);
       margin-top: 10px;
       border-radius: 18px;
       overflow: hidden;
@@ -22,15 +22,14 @@
     }
     #mapa { flex: 1; width: 100%; z-index: 1; }
 
-    /* Painel de Filtros (Agora fora do mapa, no canto) */
     .map-controls {
       position: absolute;
-      top: 120px; /* Desceu para não pegar a logo */
+      top: 120px;
       left: 30px;
       background: white;
       border-radius: 12px;
       box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-      z-index: 1000; /* Fica acima de tudo */
+      z-index: 1000;
       overflow: hidden;
       width: 260px;
       max-width: calc(100vw - 60px);
@@ -77,7 +76,6 @@
     }
     .order-btn.active { background: var(--p); color: white; border-color: var(--p); font-weight: bold; }
 
-    /* Spinner de carregamento */
     .loading-overlay {
       position: absolute; inset: 0; background: rgba(255,255,255,0.7);
       display: flex; align-items: center; justify-content: center;
@@ -85,14 +83,14 @@
     }
     
     .btn-acessibilidade {
-      position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px;
+      position: fixed; bottom: 90px; right: 30px; width: 55px; height: 55px;
       border-radius: 50%; background: var(--p); color: white; border: none;
       cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
       display: flex; align-items: center; justify-content: center;
       z-index: 1000; transition: transform 0.2s;
     }
     .menu-acessibilidade {
-      position: fixed; bottom: 95px; right: 30px; background: white;
+      position: fixed; bottom: 155px; right: 30px; background: white;
       border: 1px solid var(--line); border-radius: 16px; padding: 15px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none;
       flex-direction: column; gap: 8px; z-index: 999; width: 200px;
@@ -108,7 +106,7 @@
   <main class="phone app-shell">
     
     <header class="app-header">
-            <a class="logo" href="index.html" aria-label="BuscaPet, início">
+      <a class="logo" href="index.html" aria-label="BuscaPet, início">
         <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="6" cy="8" rx="2" ry="2.7"/><ellipse cx="11" cy="5" rx="2" ry="2.7"/><ellipse cx="17" cy="6" rx="2" ry="2.7"/><ellipse cx="20" cy="11" rx="1.8" ry="2.5"/><path d="M5 18c0-3 4-7 7-7s7 4 7 7c0 5-5 1-7 1s-7 4-7-1Z"/></svg>
         <span class="wordmark">Busca<strong>Pet</strong></span>
       </a>
@@ -121,7 +119,6 @@
     </header>
 
     <div class="page" style="padding: 0;">
-      <!-- Painel de Filtros (Movido para fora do mapa) -->
       <div class="map-controls">
         <div class="filter-header" id="btn-toggle-filtros">
           <h3>Filtros</h3>
@@ -152,7 +149,6 @@
             <div class="order-btn-group">
               <button class="order-btn active" data-order="recente">Recentes</button>
               <button class="order-btn" data-order="antigo">Antigos</button>
-              <!-- Botão de Recompensa REMOVIDO AQUI -->
             </div>
           </div>
         </div>
@@ -177,7 +173,6 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // Lógica de Acessibilidade
     const btnAcess = document.getElementById('btn-acessibilidade');
     const menuAcess = document.getElementById('menu-acessibilidade');
     if (btnAcess && menuAcess) {
@@ -205,7 +200,6 @@
       });
     }
 
-    // Lógica Principal do Mapa
     document.addEventListener('DOMContentLoaded', async () => {
       const mapa = L.map('mapa', { zoomControl: false }).setView([-20.4697, -54.6201], 12);
       L.control.zoom({ position: 'bottomright' }).addTo(mapa);
@@ -244,7 +238,6 @@
           return matchTipo && matchRegiao;
         });
 
-        // Ordenação (Recompensa removida)
         petsFiltrados.sort((a, b) => {
           if (ordemAtiva === 'recente') return new Date(b.data_criacao) - new Date(a.data_criacao);
           if (ordemAtiva === 'antigo') return new Date(a.data_criacao) - new Date(b.data_criacao);
@@ -321,13 +314,5 @@
       });
     });
   </script>
-    <!-- Área onde o menu global será injetado -->
-  <div id="global-ui"></div>
-
-  <!-- Script Global -->
-  <script src="global.js"></script>
-  
-  <!-- Script específico da página (se houver, como app.js) -->
-  <script src="app.js"></script> 
 </body>
 </html>
