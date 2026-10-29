@@ -53,58 +53,21 @@
       font-weight: bold;
       cursor: pointer;
     }
-
-    .float-btn {
-      position: fixed; width: 55px; height: 55px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      color: white; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-      z-index: 1000; transition: transform 0.2s; text-decoration: none;
-    }
-    .float-btn:hover { transform: scale(1.1); }
-    .btn-favoritos-float { bottom: 100px; right: 30px; background: #e11d48; }
-
-    .btn-acessibilidade {
-      position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px;
-      border-radius: 50%; background: var(--p); color: white; border: none;
-      cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 1000; transition: transform 0.2s;
-    }
-    .menu-acessibilidade {
-      position: fixed; bottom: 95px; right: 30px; background: white;
-      border: 1px solid var(--line); border-radius: 16px; padding: 15px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none;
-      flex-direction: column; gap: 8px; z-index: 999; width: 200px;
-    }
-    .menu-acessibilidade.aberto { display: flex; }
-    .menu-acessibilidade h4 { margin: 0 0 5px 0; font-size: 14px; color: #666; text-align: center; }
-    .menu-acessibilidade button {
-      background: #f4f4f8; border: none; padding: 10px; border-radius: 8px;
-      cursor: pointer; font-weight: bold; color: var(--ink); text-align: left;
-    }
-    .menu-acessibilidade button:hover { background: #e0d4fc; }
   </style>
 </head>
 <body>
   <main class="phone app-shell">
     
-    <!-- CABEÇALHO -->
-    <header class="app-header">
+    <!-- CABEÇALHO (Apenas a logo, pois o menu agora é o inferior) -->
+    <header class="app-header" style="justify-content: space-between; padding: 15px 20px;">
       <a class="logo" href="index.html" aria-label="BuscaPet, início">
         <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="6" cy="8" rx="2" ry="2.7"/><ellipse cx="11" cy="5" rx="2" ry="2.7"/><ellipse cx="17" cy="6" rx="2" ry="2.7"/><ellipse cx="20" cy="11" rx="1.8" ry="2.5"/><path d="M5 18c0-3 4-7 7-7s7 4 7 7c0 5-5 1-7 1s-7 4-7-1Z"/></svg>
         <span class="wordmark">Busca<strong>Pet</strong></span>
       </a>
       
-      <nav class="main-nav" aria-label="Navegação principal">
-        <a href="index.html" class="active">Início</a>
-        <a href="mapa.html">Mapa</a>
-        <a href="cadastro.html" class="post-link">+ Publicar</a>
-        <a href="minha-area.html">Minha área</a>
-      </nav>
-
-      <div class="header-links">
-        <a href="servicos.html">Rede de apoio</a>
-        <span class="mode-pill">Tutor de pet</span>
+      <div class="header-links" style="display: flex; gap: 15px; align-items: center;">
+        <a href="servicos.html" style="font-size: 14px; font-weight: bold; color: #5a5474; text-decoration: none;">Rede de apoio</a>
+        <span class="mode-pill" style="background: #eee7ff; color: #5826d2; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold;">Tutor de pet</span>
       </div>
     </header>
 
@@ -171,29 +134,13 @@
     </div>
   </main>
 
-  <!-- BOTÕES FLUTUANTES -->
-  <a href="favoritos.html" class="float-btn btn-favoritos-float" title="Meus Favoritos">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.8 4.7a5.4 5.4 0 0 0-7.6 0L12 5.9l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.7a5.4 5.4 0 0 0 0-7.6Z"/></svg>
-  </a>
-
-  <button class="btn-acessibilidade" id="btn-acessibilidade" aria-label="Abrir menu de acessibilidade">
-    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
-  </button>
-  <div class="menu-acessibilidade" id="menu-acessibilidade">
-    <h4>Acessibilidade</h4>
-    <button type="button" data-action="text-size" data-value="smaller">A− Diminuir texto</button>
-    <button type="button" data-action="text-size" data-value="larger">A+ Aumentar texto</button>
-    <button type="button" data-action="contrast">◐ Alto contraste</button>
-  </div>
-
-  <script src="app.js"></script>
-    <!-- Área onde o menu global será injetado -->
+  <!-- Área onde o menu global (inferior) será injetado -->
   <div id="global-ui"></div>
 
-  <!-- Script Global -->
+  <!-- Script Global (cria o menu inferior, botões flutuantes e acessibilidade) -->
   <script src="global.js"></script>
   
-  <!-- Script específico da página (se houver, como app.js) -->
+  <!-- Script específico da Home (filtros e listagem de pets) -->
   <script src="app.js"></script> 
 </body>
 </html>
