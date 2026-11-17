@@ -232,6 +232,30 @@
       reader.readAsDataURL(file);
     });
 
+    // 4.5 VALIDAÇÃO DO NOME DO PET
+const nomePetInput = document.getElementById('nome');
+
+nomePetInput.addEventListener('input', () => {
+  let v = nomePetInput.value.replace(/[^A-Za-zÀ-ÿ\s'-]/g, '');
+  v = v.replace(/\b\w/g, c => c.toUpperCase());
+  nomePetInput.value = v.slice(0, 40);
+});
+
+function nomePetValido(v) {
+  const limpo = v.trim();
+  if (limpo.length < 2 || limpo.length > 40) return false;
+  if (/\d/.test(limpo)) return false;
+  return /^[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ\s'-]*$/.test(limpo);
+}
+
+nomePetInput.addEventListener('blur', () => {
+  if (!nomePetValido(nomePetInput.value)) {
+    nomePetInput.classList.add('input-error');
+  } else {
+    nomePetInput.classList.remove('input-error');
+  }
+});
+
     // 5. ENVIO DO FORMULÁRIO
     document.getElementById('form-pet').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -249,6 +273,12 @@
       }
 
       const usuarioLogado = JSON.parse(usuarioString);
+
+      if (!nomePetValido(document.getElementById('nome').value)) {
+  document.getElementById('nome').classList.add('input-error');
+  mostrarToast('Nome do pet inválido. Use apenas letras, mínimo 2 caracteres.', 'erro');
+  return;
+}
 
       const novoPet = {
         nome: document.getElementById('nome').value,

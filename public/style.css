@@ -4750,3 +4750,160 @@ html.a11y-high-contrast textarea {
     box-sizing: border-box !important;
   }
 }
+
+/* =========================================
+   5. VALIDAÇÃO VISUAL (campos vermelhos)
+   ========================================= */
+.control.input-error {
+  border-color: #e11d48 !important;
+  background: #fff5f7 !important;
+  box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.15) !important;
+}
+.control.input-error:focus {
+  border-color: #e11d48 !important;
+}
+.error-msg.show {
+  display: block !important;
+  color: #e11d48 !important;
+  font-size: 12px;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+/* Barra de força de senha */
+.forca-senha-barra {
+  height: 6px;
+  background: #eee;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.forca-senha-barra > div {
+  height: 100%;
+  width: 0%;
+  background: #e11d48;
+  transition: width 0.3s, background 0.3s;
+}
+.checklist-senha {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #777;
+  display: grid;
+  gap: 2px;
+}
+.checklist-senha li.ok {
+  color: #18735c;
+  font-weight: 600;
+}
+
+/* =========================================
+   6. ACESSIBILIDADE AMPLIADA
+   ========================================= */
+html.a11y-large-text { zoom: 1.15; }
+html.a11y-small-text { zoom: 0.9; }
+
+html.a11y-spacing * {
+  line-height: 1.8 !important;
+  letter-spacing: 0.05em !important;
+  word-spacing: 0.1em !important;
+}
+
+html.a11y-high-contrast {
+  --ink: #000;
+  --muted: #222;
+  --line: #444;
+  --bg: #fff;
+  color-scheme: light;
+}
+html.a11y-high-contrast body,
+html.a11y-high-contrast .app-shell,
+html.a11y-high-contrast .screen,
+html.a11y-high-contrast .page,
+html.a11y-high-contrast .app-header,
+html.a11y-high-contrast .main-nav,
+html.a11y-high-contrast .accessibility-tools,
+html.a11y-high-contrast .pet,
+html.a11y-high-contrast .control {
+  background: #fff !important;
+  color: #000 !important;
+}
+html.a11y-high-contrast a,
+html.a11y-high-contrast .main-nav a,
+html.a11y-high-contrast button:not(.post-link):not(.primary) {
+  color: #000 !important;
+}
+html.a11y-high-contrast .control,
+html.a11y-high-contrast input,
+html.a11y-high-contrast select,
+html.a11y-high-contrast textarea {
+  border-color: #333 !important;
+  color: #000 !important;
+  background: #fff !important;
+}
+
+html.a11y-dark body,
+html.a11y-dark .app-shell,
+html.a11y-dark .screen,
+html.a11y-dark .page,
+html.a11y-dark .app-header,
+html.a11y-dark .main-nav,
+html.a11y-dark .accessibility-tools {
+  background: #121212 !important;
+  color: #eee !important;
+}
+html.a11y-dark .pet,
+html.a11y-dark .control,
+html.a11y-dark .login-panel {
+  background: #1e1e1e !important;
+  color: #eee !important;
+  border-color: #333 !important;
+}
+html.a11y-dark a,
+html.a11y-dark .main-nav a,
+html.a11y-dark button:not(.post-link):not(.primary) {
+  color: #cbb6ff !important;
+}
+
+html.a11y-dyslexia * {
+  font-family: 'Comic Sans MS', 'OpenDyslexic', 'Verdana', sans-serif !important;
+}
+
+html.a11y-highlight-links a {
+  outline: 2px dashed #f59e0b !important;
+  text-decoration: underline !important;
+}
+
+/* =========================================
+   7. CORREÇÃO MOBILE DO BANNER DE BUSCA
+   ========================================= */
+@media (max-width: 768px) {
+  .hero-search {
+    width: calc(100% - 30px) !important;
+    margin: 15px auto 25px !important;
+    padding: 25px 15px !important;
+    box-sizing: border-box !important;
+  }
+  .hero-search h1 {
+    font-size: 24px !important;
+  }
+  .search-bar-big {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    padding: 5px !important;
+    box-sizing: border-box !important;
+  }
+  .search-bar-big input {
+    flex: 1 !important;
+    min-width: 0 !important;
+    font-size: 15px !important;
+    padding: 10px 0 10px 14px !important;
+  }
+  .search-bar-big button {
+    flex-shrink: 0 !important;
+    padding: 10px 18px !important;
+    font-size: 13px !important;
+  }
+}
