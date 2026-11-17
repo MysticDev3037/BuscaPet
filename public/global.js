@@ -1,28 +1,47 @@
-// global.js - Menu no topo, header-links padrão, botões flutuantes e acessibilidade
+// global.js - Menu no topo, header-links padrão, botão Publicar em destaque,
+// botões flutuantes e acessibilidade ampliada.
 
 document.addEventListener('DOMContentLoaded', () => {
   const header = document.querySelector('.app-header');
   if (!header) return;
 
-  // Remove menus antigos para não duplicar
+  // Remove menus e links antigos para não duplicar
   document.querySelectorAll('.main-nav').forEach(menu => menu.remove());
   document.querySelectorAll('.header-links').forEach(links => links.remove());
 
   const paginaAtual = window.location.pathname.split('/').pop() || 'index.html';
 
-  // 1. Monta o menu
+  // 1. Monta o menu com o botão Publicar em destaque
   const nav = document.createElement('nav');
   nav.className = 'main-nav';
   nav.setAttribute('aria-label', 'Navegação principal');
   nav.innerHTML = `
-    <a href="index.html" class="${paginaAtual === 'index.html' ? 'active' : ''}">Início</a>
-    <a href="mapa.html" class="${paginaAtual === 'mapa.html' ? 'active' : ''}">Mapa</a>
-    <a href="cadastro.html" class="post-link ${paginaAtual === 'cadastro.html' ? 'active' : ''}">+ Publicar</a>
-    <a href="favoritos.html" class="${paginaAtual === 'favoritos.html' ? 'active' : ''}">Favoritos</a>
-    <a href="minha-area.html" class="${paginaAtual === 'minha-area.html' ? 'active' : ''}">Minha área</a>
+    <a href="index.html" class="${paginaAtual === 'index.html' ? 'active' : ''}">
+      <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></svg>
+      <span>Início</span>
+    </a>
+    <a href="mapa.html" class="${paginaAtual === 'mapa.html' ? 'active' : ''}">
+      <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2Z"/><path d="M9 3v16M15 5v16"/></svg>
+      <span>Mapa</span>
+    </a>
+    <a href="cadastro.html" class="post-link ${paginaAtual === 'cadastro.html' ? 'active' : ''}">
+      <svg class="post-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M12 8v8M8 12h8"/>
+      </svg>
+      <span>Publicar</span>
+    </a>
+    <a href="favoritos.html" class="${paginaAtual === 'favoritos.html' ? 'active' : ''}">
+      <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.7a5.4 5.4 0 0 0-7.6 0L12 5.9l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.7a5.4 5.4 0 0 0 0-7.6Z"/></svg>
+      <span>Favoritos</span>
+    </a>
+    <a href="minha-area.html" class="${paginaAtual === 'minha-area.html' ? 'active' : ''}">
+      <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2Z"/></svg>
+      <span>Minha área</span>
+    </a>
   `;
 
-  // 2. Monta o header-links padrão (Rede de apoio + mode-pill)
+  // 2. Header-links padrão (Rede de apoio + mode-pill)
   const headerLinks = document.createElement('div');
   headerLinks.className = 'header-links';
   headerLinks.innerHTML = `
@@ -30,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <span class="mode-pill">Tutor de pet</span>
   `;
 
-  // 3. Injeta no header (nav antes dos links)
+  // 3. Injeta no header (nav + links)
   header.appendChild(nav);
   header.appendChild(headerLinks);
 

@@ -4907,3 +4907,69 @@ html.a11y-highlight-links a {
     font-size: 13px !important;
   }
 }
+
+/* =========================================
+   MENU INFERIOR — BOTÃO PUBLICAR EM DESTAQUE
+   ========================================= */
+
+/* Botão Publicar com pílula + ícone SVG + brilho no hover */
+.main-nav .post-link {
+  background: linear-gradient(135deg, #6d28e8, #914fe9);
+  color: #fff !important;
+  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: 999px;
+  box-shadow: 0 6px 16px rgba(109, 40, 232, 0.35);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Brilho que passa da esquerda para a direita no hover */
+.main-nav .post-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+  pointer-events: none;
+}
+.main-nav .post-link:hover::before {
+  left: 100%;
+}
+
+.main-nav .post-link:hover,
+.main-nav .post-link.active {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(109, 40, 232, 0.5);
+  background: linear-gradient(135deg, #5820c4, #7a3fd4);
+}
+
+.main-nav .post-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* No mobile, o botão fica um pouco menor */
+@media (max-width: 699px) {
+  .main-nav .post-link {
+    padding: 8px 12px;
+    font-size: 11px;
+    gap: 4px;
+  }
+  .main-nav .post-icon {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* =========================================
+   (mantém as classes de acessibilidade que já existem no style.css)
+   ========================================= */
