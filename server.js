@@ -94,16 +94,33 @@ app.post('/api/pets', async (req, res) => {
     if (contato && !validarTelefone(contato)) {
       return res.status(400).json({ erro: 'Telefone de contato inválido.' });
     }
+    if (!usuario_id) {
+      return res.status(400).json({ erro: 'Usuário não identificado. Faça login de novo.' });
+    }
+
+    // Converte campos numéricos vazios
+    const idadeNumerica = idade === '' || idade === null || idade === undefined
+      ? null
+      : parseInt(idade, 10);
+    const recompensaNumerica = recompensa === '' || recompensa === null || recompensa === undefined
+      ? 0
+      : parseFloat(recompensa);
+
+    // Confere se o usuário existe (evita erro de foreign key)
+    const userCheck = await pool.query('SELECT id FROM usuarios WHERE id = $1', [usuario_id]);
+    if (userCheck.rows.length === 0) {
+      return res.status(400).json({ erro: 'Sua sessão expirou. Faça login de novo.' });
+    }
 
     const result = await pool.query(
       `INSERT INTO pets (nome, especie, raca, idade, cidade, regiao, bairro, recompensa, descricao, status, usuario_id, foto_url, contato)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) RETURNING *`,
-      [nome.trim(), especie, raca, idade, cidade, regiao, bairro, recompensa, descricao, status, usuario_id, foto_url, contato]
+      [nome.trim(), especie, raca, idadeNumerica, cidade, regiao, bairro, recompensaNumerica, descricao, status, usuario_id, foto_url, contato]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error("ERRO AO CADASTRAR PET:", err);
-    res.status(500).json({ erro: 'Erro ao cadastrar pet' });
+    res.status(500).json({ erro: 'Erro ao cadastrar pet. Tente novamente.' });
   }
 });
 
@@ -169,6 +186,21 @@ app.post('/api/cadastro', async (req, res) => {
       return res.status(400).json({ erro: 'Dados duplicados. Verifique e tente novamente.' });
     }
     res.status(500).json({ erro: 'Erro interno ao cadastrar.' });
+  }
+});
+
+app.get('/api/usuarios/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query(
+      'SELECT id, nome, email, telefone, foto_perfil FROM usuarios WHERE id = $1',
+      [id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ erro: 'Usuário não encontrado' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("ERRO AO BUSCAR USUÁRIO:", err);
+    res.status(500).json({ erro: 'Erro ao buscar usuário' });
   }
 });
 
