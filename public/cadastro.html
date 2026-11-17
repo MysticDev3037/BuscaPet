@@ -6,11 +6,10 @@
   <title>BuscaPet | Publicar Pet</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    .foto-preview { width: 120px; height: 120px; border-radius: 12px; object-fit: cover; background: #eee; border: 2px solid var(--line); display: none; margin-top: 10px;}
+    .foto-preview { width: 120px; height: 120px; border-radius: 12px; object-fit: cover; background: #eee; border: 2px solid var(--line); display: none; margin-top: 10px; }
     .foto-preview.show { display: block; }
     .hidden { display: none !important; }
 
-    /* Estilo do Toast (Notificação) */
     .toast-container {
       position: fixed;
       bottom: 30px;
@@ -32,34 +31,24 @@
       max-width: 90%;
       text-align: center;
     }
-    .toast-container.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-    .toast-container.error {
-      background: #a92b48;
-    }
+    .toast-container.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast-container.error { background: #a92b48; }
   </style>
 </head>
 <body>
   <main class="phone app-shell">
-    
+
     <header class="app-header">
       <a class="logo" href="index.html" aria-label="BuscaPet, início">
         <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="6" cy="8" rx="2" ry="2.7"/><ellipse cx="11" cy="5" rx="2" ry="2.7"/><ellipse cx="17" cy="6" rx="2" ry="2.7"/><ellipse cx="20" cy="11" rx="1.8" ry="2.5"/><path d="M5 18c0-3 4-7 7-7s7 4 7 7c0 5-5 1-7 1s-7 4-7-1Z"/></svg>
         <span class="wordmark">Busca<strong>Pet</strong></span>
       </a>
-      <nav class="main-nav">
-        <a href="index.html">Início</a>
-        <a href="mapa.html">Mapa</a>
-        <a href="cadastro.html" class="post-link active">+ Publicar</a>
-        <a href="minha-area.html">Minha Área</a>
-      </nav>
+      <!-- O global.js injeta o <nav class="main-nav"> aqui automaticamente -->
     </header>
 
     <div class="page narrow form-page">
       <a href="index.html" class="back-link">‹ Voltar</a>
-      
+
       <!-- TELA 1: ESCOLHA -->
       <div id="tela-escolha">
         <h1>Publicar um Alerta</h1>
@@ -87,11 +76,14 @@
         <h1 id="titulo-form">Publicar um Alerta</h1>
         <p class="intro" id="subtitulo-form">Preencha os dados do pet abaixo.</p>
 
-        <form id="form-pet" class="form">
+        <form id="form-pet" class="form" novalidate>
           <input type="hidden" id="tipo-alerta" value="perdido">
-          
+
           <div class="form-grid">
-            <label>Nome do Pet *<input class="control" type="text" id="nome" required></label>
+            <label>Nome do Pet *
+              <input class="control" type="text" id="nome" required>
+              <span class="error-msg" data-for="nome">Nome inválido. Use apenas letras, mínimo 2 caracteres.</span>
+            </label>
             <label>Espécie *
               <select class="control" id="especie" required>
                 <option value="cão">Cão</option>
@@ -100,12 +92,18 @@
               </select>
             </label>
             <label>Raça<input class="control" type="text" id="raca"></label>
-            <label>Idade<input class="control" type="number" id="idade"></label>
+            <label>Idade (anos)
+              <input class="control" type="number" id="idade" min="0" max="99" maxlength="2" placeholder="Ex.: 5">
+              <span class="error-msg" data-for="idade">Idade deve ser entre 0 e 99 anos.</span>
+            </label>
             <label>Cidade *
               <input class="control" type="text" id="cidade" value="Campo Grande - MS" readonly style="background: #eee;">
             </label>
-            <label>Região/Bairro *<input class="control" type="text" id="regiao" required placeholder="Ex: Centro"></label>
-            
+            <label>Região/Bairro *
+              <input class="control" type="text" id="regiao" required placeholder="Ex: Centro">
+              <span class="error-msg" data-for="regiao">Informe a região ou bairro.</span>
+            </label>
+
             <label>Telefone / WhatsApp
               <input class="control" type="tel" id="contato" placeholder="(67) 99999-9999" maxlength="15">
             </label>
@@ -122,25 +120,28 @@
               <input class="control" type="file" id="foto-input" accept="image/*" required>
               <img id="foto-preview" class="foto-preview" alt="Prévia da foto">
               <span class="hint">JPG, PNG ou WebP, até 2MB. A foto é obrigatória.</span>
+              <span class="error-msg" data-for="foto-input">Adicione uma foto do pet.</span>
             </label>
 
-            <label class="full">Descrição *<textarea class="control" id="descricao" required></textarea></label>
+            <label class="full">Descrição *
+              <textarea class="control" id="descricao" required placeholder="Cor, coleira, comportamento e informações que ajudem na identificação"></textarea>
+              <span class="error-msg" data-for="descricao">A descrição deve ter pelo menos 10 caracteres.</span>
+            </label>
           </div>
-          
+
           <div class="actions">
             <button type="submit" class="btn primary">Publicar Alerta</button>
             <a href="index.html" class="btn secondary">Cancelar</a>
           </div>
         </form>
       </div>
-
     </div>
   </main>
 
   <script>
     let fotoBase64 = "";
 
-    // --- FUNÇÃO TOAST (Notificação Bonita) ---
+    // --- TOAST ---
     function mostrarToast(mensagem, tipo = 'sucesso') {
       let toast = document.getElementById('toast-global');
       if (!toast) {
@@ -150,13 +151,34 @@
       }
       toast.className = `toast-container show ${tipo === 'erro' ? 'error' : ''}`;
       toast.innerHTML = `<span>${tipo === 'erro' ? '⚠️' : '✅'}</span> ${mensagem}`;
-      
-      setTimeout(() => {
-        toast.classList.remove('show');
-      }, 3500);
+      setTimeout(() => { toast.classList.remove('show'); }, 3500);
     }
 
-    // 1. ESCONDER/MOSTRAR TELAS
+    // --- VALIDAÇÃO VISUAL ---
+    function marcarErro(id, mensagem) {
+      const input = document.getElementById(id);
+      if (!input) return;
+      input.classList.add('input-error');
+      input.setAttribute('aria-invalid', 'true');
+      const label = input.closest('label');
+      const msg = label?.querySelector(`.error-msg[data-for="${id}"]`);
+      if (msg) {
+        if (mensagem) msg.textContent = mensagem;
+        msg.classList.add('show');
+      }
+    }
+
+    function limparErro(id) {
+      const input = document.getElementById(id);
+      if (!input) return;
+      input.classList.remove('input-error');
+      input.removeAttribute('aria-invalid');
+      const label = input.closest('label');
+      const msg = label?.querySelector(`.error-msg[data-for="${id}"]`);
+      if (msg) msg.classList.remove('show');
+    }
+
+    // --- TELA 1 → TELA 2 ---
     function mostrarFormulario(tipo) {
       document.getElementById('tela-escolha').classList.add('hidden');
       document.getElementById('tela-formulario').classList.remove('hidden');
@@ -174,7 +196,7 @@
       }
     }
 
-    // 2. CARREGAR PETS PARA ASSOCIAR
+    // --- PETS PARA ASSOCIAR ---
     async function carregarPetsParaAssociar() {
       const select = document.getElementById('pet-associado');
       select.innerHTML = '<option value="">Nenhum</option>';
@@ -182,19 +204,16 @@
         const response = await fetch('/api/pets');
         const pets = await response.json();
         const perdidos = pets.filter(p => p.status === 'perdido');
-        
         perdidos.forEach(pet => {
           const option = document.createElement('option');
           option.value = pet.id;
           option.textContent = `${pet.nome} (${pet.raca || pet.especie}) - ${pet.regiao}`;
           select.appendChild(option);
         });
-      } catch (error) {
-        console.error("Erro ao carregar pets:", error);
-      }
+      } catch (error) { console.error("Erro ao carregar pets:", error); }
     }
 
-    // 3. MÁSCARA DE TELEFONE
+    // --- MÁSCARA DE TELEFONE ---
     document.getElementById('contato').addEventListener('input', (e) => {
       let v = e.target.value.replace(/\D/g, '');
       v = v.replace(/^(\d{2})(\d)/g, '($1) $2');
@@ -202,7 +221,20 @@
       e.target.value = v;
     });
 
-    // 4. PREVIEW DA FOTO
+    // --- IDADE: BLOQUEIA ACIMA DE 2 DÍGITOS E VALIDA 0–99 ---
+    const idadeInput = document.getElementById('idade');
+    idadeInput.addEventListener('input', (e) => {
+      let v = e.target.value.replace(/\D/g, '');
+      if (v.length > 2) v = v.slice(0, 2);
+      e.target.value = v;
+      if (v && (parseInt(v, 10) < 0 || parseInt(v, 10) > 99)) {
+        marcarErro('idade', 'Idade deve ser entre 0 e 99 anos.');
+      } else {
+        limparErro('idade');
+      }
+    });
+
+    // --- FOTO ---
     document.getElementById('foto-input').addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -211,6 +243,7 @@
         mostrarToast('A foto é muito grande. Escolha uma imagem de até 2MB.', 'erro');
         e.target.value = '';
         fotoBase64 = '';
+        marcarErro('foto-input');
         return;
       }
 
@@ -219,6 +252,7 @@
         mostrarToast('Formato inválido. Envie apenas JPG, PNG ou WebP.', 'erro');
         e.target.value = '';
         fotoBase64 = '';
+        marcarErro('foto-input');
         return;
       }
 
@@ -228,43 +262,92 @@
         const preview = document.getElementById('foto-preview');
         preview.src = fotoBase64;
         preview.classList.add('show');
+        limparErro('foto-input');
       };
       reader.readAsDataURL(file);
     });
 
-    // 4.5 VALIDAÇÃO DO NOME DO PET
-const nomePetInput = document.getElementById('nome');
+    // --- NOME DO PET ---
+    const nomePetInput = document.getElementById('nome');
+    nomePetInput.addEventListener('input', () => {
+      let v = nomePetInput.value.replace(/[^A-Za-zÀ-ÿ\s'-]/g, '');
+      v = v.replace(/\b\w/g, c => c.toUpperCase());
+      nomePetInput.value = v.slice(0, 40);
+      if (nomePetValido(nomePetInput.value)) limparErro('nome');
+    });
 
-nomePetInput.addEventListener('input', () => {
-  let v = nomePetInput.value.replace(/[^A-Za-zÀ-ÿ\s'-]/g, '');
-  v = v.replace(/\b\w/g, c => c.toUpperCase());
-  nomePetInput.value = v.slice(0, 40);
-});
+    function nomePetValido(v) {
+      const limpo = v.trim();
+      if (limpo.length < 2 || limpo.length > 40) return false;
+      if (/\d/.test(limpo)) return false;
+      return /^[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ\s'-]*$/.test(limpo);
+    }
 
-function nomePetValido(v) {
-  const limpo = v.trim();
-  if (limpo.length < 2 || limpo.length > 40) return false;
-  if (/\d/.test(limpo)) return false;
-  return /^[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ\s'-]*$/.test(limpo);
-}
+    nomePetInput.addEventListener('blur', () => {
+      if (!nomePetValido(nomePetInput.value)) marcarErro('nome');
+      else limparErro('nome');
+    });
 
-nomePetInput.addEventListener('blur', () => {
-  if (!nomePetValido(nomePetInput.value)) {
-    nomePetInput.classList.add('input-error');
-  } else {
-    nomePetInput.classList.remove('input-error');
-  }
-});
+    // --- DESCRIÇÃO ---
+    document.getElementById('descricao').addEventListener('blur', () => {
+      const v = document.getElementById('descricao').value.trim();
+      if (v.length < 10) marcarErro('descricao');
+      else limparErro('descricao');
+    });
+    document.getElementById('descricao').addEventListener('input', () => {
+      const v = document.getElementById('descricao').value.trim();
+      if (v.length >= 10) limparErro('descricao');
+    });
 
-    // 5. ENVIO DO FORMULÁRIO
+    // --- REGIÃO ---
+    document.getElementById('regiao').addEventListener('blur', () => {
+      if (!document.getElementById('regiao').value.trim()) marcarErro('regiao');
+      else limparErro('regiao');
+    });
+    document.getElementById('regiao').addEventListener('input', () => {
+      if (document.getElementById('regiao').value.trim()) limparErro('regiao');
+    });
+
+    // --- SUBMIT ---
     document.getElementById('form-pet').addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      let valido = true;
+
+      // Nome
+      if (!nomePetValido(document.getElementById('nome').value)) {
+        marcarErro('nome');
+        valido = false;
+      }
+      // Região
+      if (!document.getElementById('regiao').value.trim()) {
+        marcarErro('regiao');
+        valido = false;
+      }
+      // Idade
+      const idadeVal = document.getElementById('idade').value;
+      if (idadeVal && (parseInt(idadeVal, 10) < 0 || parseInt(idadeVal, 10) > 99)) {
+        marcarErro('idade');
+        valido = false;
+      }
+      // Descrição
+      const descVal = document.getElementById('descricao').value.trim();
+      if (descVal.length < 10) {
+        marcarErro('descricao');
+        valido = false;
+      }
+      // Foto
       if (!fotoBase64) {
-        mostrarToast('Por favor, adicione uma foto do pet.', 'erro');
+        marcarErro('foto-input');
+        valido = false;
+      }
+
+      if (!valido) {
+        mostrarToast('Corrija os campos destacados em vermelho.', 'erro');
         return;
       }
 
+      // Login
       const usuarioString = localStorage.getItem('usuarioLogado');
       if (!usuarioString) {
         mostrarToast('Você precisa estar logado para publicar.', 'erro');
@@ -274,21 +357,15 @@ nomePetInput.addEventListener('blur', () => {
 
       const usuarioLogado = JSON.parse(usuarioString);
 
-      if (!nomePetValido(document.getElementById('nome').value)) {
-  document.getElementById('nome').classList.add('input-error');
-  mostrarToast('Nome do pet inválido. Use apenas letras, mínimo 2 caracteres.', 'erro');
-  return;
-}
-
       const novoPet = {
-        nome: document.getElementById('nome').value,
+        nome: document.getElementById('nome').value.trim(),
         especie: document.getElementById('especie').value,
         raca: document.getElementById('raca').value,
-        idade: document.getElementById('idade').value,
+        idade: document.getElementById('idade').value || null,
         cidade: document.getElementById('cidade').value,
-        regiao: document.getElementById('regiao').value,
+        regiao: document.getElementById('regiao').value.trim(),
         recompensa: 0,
-        descricao: document.getElementById('descricao').value,
+        descricao: descVal,
         status: document.getElementById('tipo-alerta').value,
         foto_url: fotoBase64,
         contato: document.getElementById('contato').value,
@@ -311,7 +388,8 @@ nomePetInput.addEventListener('blur', () => {
           mostrarToast('Pet publicado com sucesso!');
           setTimeout(() => window.location.href = 'index.html', 2000);
         } else {
-          mostrarToast('Erro ao publicar pet.', 'erro');
+          const data = await response.json().catch(() => ({}));
+          mostrarToast(data.erro || 'Erro ao publicar pet.', 'erro');
         }
       } catch (error) {
         console.error(error);
@@ -319,5 +397,11 @@ nomePetInput.addEventListener('blur', () => {
       }
     });
   </script>
+
+  <!-- Área onde o menu global será injetado -->
+  <div id="global-ui"></div>
+
+  <!-- Script Global (menu, botões flutuantes e acessibilidade) -->
+  <script src="global.js"></script>
 </body>
 </html>
