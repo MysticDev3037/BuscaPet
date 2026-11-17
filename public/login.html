@@ -6,7 +6,6 @@
   <title>BuscaPet | Minha Área</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* Estilo do Toast (Notificação) */
     .toast-container {
       position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
       background: #2c1847; color: white; padding: 15px 25px; border-radius: 12px;
@@ -16,22 +15,24 @@
     }
     .toast-container.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     .toast-container.error { background: #a92b48; }
+
+    .password-wrapper { position: relative; }
+    .password-wrapper input { padding-right: 44px; }
+    .toggle-password {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; font-size: 18px; color: #777;
+    }
   </style>
 </head>
 <body>
   <main class="phone app-shell">
-    
+
     <header class="app-header">
       <a class="logo" href="index.html" aria-label="BuscaPet, início">
         <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="6" cy="8" rx="2" ry="2.7"/><ellipse cx="11" cy="5" rx="2" ry="2.7"/><ellipse cx="17" cy="6" rx="2" ry="2.7"/><ellipse cx="20" cy="11" rx="1.8" ry="2.5"/><path d="M5 18c0-3 4-7 7-7s7 4 7 7c0 5-5 1-7 1s-7 4-7-1Z"/></svg>
         <span class="wordmark">Busca<strong>Pet</strong></span>
       </a>
-      <nav class="main-nav">
-        <a href="index.html">Início</a>
-        <a href="mapa.html">Mapa</a>
-        <a href="cadastro.html" class="post-link">+ Publicar</a>
-        <a href="login.html" class="active">Minha Área</a>
-      </nav>
+      <!-- O global.js injeta o <nav class="main-nav"> aqui automaticamente -->
     </header>
 
     <div class="page login-page">
@@ -39,22 +40,28 @@
         <h1>Minha área</h1>
         <p class="intro">Faça login para acessar os perfis do sistema.</p>
 
-        <form id="form-login" class="form login-form">
+        <form id="form-login" class="form login-form" novalidate>
           <div class="notice warn">
             Acesso por e-mail e senha. Use os dados que você cadastrou.
           </div>
 
           <label>E-mail
-            <input class="control" type="email" id="email-login" required placeholder="seuemail@exemplo.com">
+            <input class="control" type="email" id="email-login" required placeholder="seuemail@exemplo.com" autocomplete="email">
+            <span class="error-msg" data-for="email-login">Informe um e-mail válido.</span>
           </label>
+
           <label>Senha
-            <input class="control" type="password" id="senha-login" required placeholder="Digite sua senha">
+            <div class="password-wrapper">
+              <input class="control" type="password" id="senha-login" required placeholder="Digite sua senha" autocomplete="current-password">
+              <button type="button" class="toggle-password" onclick="toggleSenhaLogin()" aria-label="Mostrar senha">👁️</button>
+            </div>
+            <span class="error-msg" data-for="senha-login">Informe sua senha.</span>
           </label>
 
           <div class="actions">
             <button type="submit" class="btn primary">Entrar</button>
           </div>
-          
+
           <div class="login-signup">
             <span>Ainda não tem acesso?</span>
             <a href="cadastro-usuario.html" class="btn secondary">Sou novo, quero me cadastrar</a>
@@ -65,7 +72,7 @@
   </main>
 
   <script>
-    // --- FUNÇÃO TOAST (Notificação Bonita) ---
+    // --- TOAST ---
     function mostrarToast(mensagem, tipo = 'sucesso') {
       let toast = document.getElementById('toast-global');
       if (!toast) {
@@ -75,18 +82,72 @@
       }
       toast.className = `toast-container show ${tipo === 'erro' ? 'error' : ''}`;
       toast.innerHTML = `<span>${tipo === 'erro' ? '⚠️' : '✅'}</span> ${mensagem}`;
-      
-      setTimeout(() => {
-        toast.classList.remove('show');
-      }, 3500);
+      setTimeout(() => toast.classList.remove('show'), 3500);
     }
 
-    // --- LÓGICA DE LOGIN ---
+    // --- VALIDAÇÃO VISUAL ---
+    function marcarErro(id, mensagem) {
+      const input = document.getElementById(id);
+      if (!input) return;
+      input.classList.add('input-error');
+      input.setAttribute('aria-invalid', 'true');
+      const label = input.closest('label');
+      const msg = label?.querySelector(`.error-msg[data-for="${id}"]`);
+      if (msg) {
+        if (mensagem) msg.textContent = mensagem;
+        msg.classList.add('show');
+      }
+    }
+
+    function limparErro(id) {
+      const input = document.getElementById(id);
+      if (!input) return;
+      input.classList.remove('input-error');
+      input.removeAttribute('aria-invalid');
+      const label = input.closest('label');
+      const msg = label?.querySelector(`.error-msg[data-for="${id}"]`);
+      if (msg) msg.classList.remove('show');
+    }
+
+    // --- MOSTRAR/ESCONDER SENHA ---
+    function toggleSenhaLogin() {
+      const input = document.getElementById('senha-login');
+      const btn = input.parentElement.querySelector('.toggle-password');
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+      }
+    }
+
+    // --- LIMPAR ERRO AO DIGITAR ---
+    document.getElementById('email-login').addEventListener('input', () => limparErro('email-login'));
+    document.getElementById('senha-login').addEventListener('input', () => limparErro('senha-login'));
+
+    // --- SUBMIT ---
     document.getElementById('form-login').addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const email = document.getElementById('email-login').value;
+      const email = document.getElementById('email-login').value.trim();
       const senha = document.getElementById('senha-login').value;
+
+      let valido = true;
+
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        marcarErro('email-login', 'Informe um e-mail válido.');
+        valido = false;
+      }
+      if (!senha) {
+        marcarErro('senha-login', 'Informe sua senha.');
+        valido = false;
+      }
+
+      if (!valido) {
+        mostrarToast('Corrija os campos destacados em vermelho.', 'erro');
+        return;
+      }
 
       try {
         const response = await fetch('/api/login', {
@@ -110,5 +171,11 @@
       }
     });
   </script>
+
+  <!-- Área onde o menu global será injetado -->
+  <div id="global-ui"></div>
+
+  <!-- Script Global (menu, botões flutuantes e acessibilidade) -->
+  <script src="global.js"></script>
 </body>
 </html>
