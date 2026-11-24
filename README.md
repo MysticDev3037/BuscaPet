@@ -1,94 +1,120 @@
 # BuscaPet
 
-Protótipo funcional do Projeto Integrador de Análise e Desenvolvimento de Sistemas.
+Aplicação web de apoio à divulgação e ao acompanhamento de animais desaparecidos e encontrados, com recursos para tutores, empresas pet e administração.
 
-**Encontrar começa por conectar.**
+## Entrega atual — Projeto Integrador II (24/11/2026)
 
-Esta versão evolui o `index(1).html` fornecido pela equipe. Mantém a identidade roxa, os cards e as telas de referência. Acrescenta regras e interações em JavaScript puro.
+- **Aplicação:** https://busca-pet-delta.vercel.app/
+- **Branch de apresentação:** `apresentacao-contas-2026-11-19`
+- **Baseline funcional confirmada:** `2507a68ec1dcaa3bd6b6f3ba4cd8e87f667e36e2`
+- **Frontend:** SPA JavaScript/Vite, HTML e CSS
+- **Persistência efetivamente publicada:** `localStorage` e `IndexedDB` do navegador — **sem Supabase ativo nessa versão**.
 
-## Como abrir
+**Funcionalidades demonstráveis:** login/cadastro local; tutores, empresas e administradores; cadastro de animais e fotos; alertas de perda/encontro; mapa e avistamentos; cartaz PNG; correspondências por características; carteirinha; agenda; serviços veterinários/pet shops; vitrine de empresas após aprovação; moderação e denúncias. O administrador também pode cadastrar animais e publicar alertas próprios.
 
-1. Extraia o ZIP inteiro.
-2. Abra `index.html` em um navegador moderno com JavaScript habilitado.
-3. Entre em **Minha área**, informe um nome fictício e salve o aceite dos termos.
-4. Use **Publicar** para cadastrar um pet.
+**Limites:** dados não são sincronizados entre aparelhos; não há chat interno compartilhado, autenticação segura de servidor, antispam robusto ou e-mail transacional. Os animais e alertas previamente preenchidos são registros de demonstração. Não use dados pessoais, fotos sem autorização nem senhas particulares nesse modo.
 
-Para desenvolvimento, prefira um servidor estático, por exemplo a extensão Live Server do VS Code ou, com Python instalado, execute na pasta do projeto:
+### Como executar e verificar
+
+Requer Node.js 22 ou superior:
 
 ```bash
-python -m http.server 8000
+npm ci
+npm run check
+npm test
+npm run build:presentation
+npm run preview -- --host 127.0.0.1 --port 5186
 ```
 
-Abra `http://localhost:8000`. Use sempre a mesma origem e navegador para manter os mesmos registros. O comportamento de armazenamento em `file://` depende do navegador. Não existe instalação de dependências para usar o aplicativo.
+Abra `http://127.0.0.1:5186/#home`. Para edição contínua em modo local, utilize `npm run preview:local`. O workflow de navegador usa Chromium com o build de apresentação na porta 5186. Os testes de integração com Supabase pertencem a outro modo e não podem ser usados como evidência de produção nesta versão.
 
-## Layout adaptativo
+**Contas de avaliação (somente modo local):** `tutor@buscapet.test` / `BuscaPet@2026`; `admin@buscapet.test` / `BuscaPet@2026`. Empresas criam conta comercial pelo site e dependem de aprovação administrativa no mesmo navegador. As credenciais de avaliação não aparecem mais no login.
 
-A identidade roxa e lilás e as fotos dos três exemplos originais seguem o PDF fornecido pela equipe. Cada um dos sete alertas demonstrativos adicionais também tem uma foto local de exemplo.
+### Documentação acadêmica principal
 
-- **Desktop a partir de 1024 px:** menu superior, filtros na lateral e cards em duas ou três colunas, conforme o espaço disponível.
-- **Tablet de 700 a 1023 px:** duas colunas de cards e filtros recolhíveis acima da lista.
-- **Celular até 699 px:** menu fixo inferior, cards em uma coluna, filtros recolhíveis e campos maiores para toque.
-- Detalhes e formulários reorganizam suas colunas. As tabelas de moderação viram blocos com rótulos no celular.
-- Em Minha área, o menu permanece fixo na lateral em telas maiores em todas as opções, inclusive moderação e denúncias, e pode ser recolhido para mostrar apenas ícones identificáveis; sua largura se ajusta ao espaço disponível. No celular, o menu se adapta a uma faixa horizontal sem barra de rolagem visual.
-- A página usa a largura disponível e rolagem normal, sem uma moldura de telefone no desktop.
+1. [Dossiê de entrega do Projeto Integrador II](docs/ENTREGA_PROJETO_INTEGRADOR_II_2026-11-24.md).
+2. [Roteiro atualizado para apresentação](docs/ROTEIRO_APRESENTACAO_ATUAL.md).
+3. [Perguntas e respostas de Engenharia de Software](docs/PERGUNTAS_ENGENHARIA_PI2.md).
+4. [Matriz de requisitos e rastreabilidade](docs/MATRIZ_RASTREABILIDADE.md).
+5. [Arquitetura e limites de implantação](docs/ARQUITETURA.md).
+6. [Testes e resultados](docs/TESTES.md).
 
-Os ajustes atuais estão na **seção 3 de `style.css`**. Os ícones da interface são SVGs locais gerados no JavaScript. A tradução em Libras usa o widget externo VLibras e precisa de conexão à internet.
+**Evidências:** [check, testes e build](https://github.com/ppedromartins11/busca-pet/actions/runs/44581445999) · [homologação em Chromium](https://github.com/ppedromartins11/busca-pet/actions/runs/44581445883). Execuções de 19/11/2026, antes da revisão de documentação. A publicação foi confirmada em 24/11/2026.
 
-## O que funciona
+---
 
-- Alertas de pet perdido ou encontrado, com foto opcional reduzida no navegador.
-- Dez alertas fictícios nos dados de demonstração, com inclusão automática e única em dados locais existentes.
-- Busca por nome, raça, cidade e região, combinada com filtros de espécie, tipo e situação.
-- Detalhes, edição pelo autor, favoritos e confirmação de reencontro.
-- Registro de avistamentos com data, hora, local aproximado e observação.
-- Denúncias com protocolo, análise, decisão justificada e contestação.
-- Painel local com contas de demonstração e histórico das ações.
-- Acesso por perfil simulado: o Administrador cadastra perfis, o Tutor de pet (responsável pelo animal) se cadastra e cada papel vê suas funções na interface.
-- Cadastro e edição de perfil com nome completo, e-mail em formato válido, telefone brasileiro, endereço estruturado, foto opcional e troca de senha. Campos de identificação e endereço são obrigatórios; e-mail, telefone e CEP não são confirmados por serviços externos. A recuperação de senha por e-mail e a confirmação de endereço eletrônico dependem de backend.
-- Avisos visuais no canto inferior direito para novos alertas, avistamentos e conversas. Mudanças em outra aba podem ser detectadas nesta origem; notificações não chegam a outros dispositivos.
-- Painel Minha área com panorama inicial, orientações de onboarding, métricas e atalhos específicos de cada perfil; o Tutor pode iniciar e enviar um alerta sem sair do menu lateral, e o Colaborador consulta alertas e favoritos no próprio painel.
-- Chat de demonstração com lista de contatos, presença online/offline simulada, mensagens locais e anexos de até 500 KB. Os dados não são transmitidos a outros navegadores.
-- Suspensão e reativação simuladas, bloqueando ações do perfil na interface.
-- Termos e política de privacidade da demonstração, com registro local de aceite.
-- Acessibilidade: atalho para o conteúdo, ajuste de escala do texto, alto contraste, foco visível e tradução em Libras pelo VLibras.
-- Exportação JSON, restauração dos exemplos e exclusão dos registros locais.
+## Registro histórico de desenvolvimento e integração
 
-## Limites desta versão
+O conteúdo abaixo foi preservado como registro das versões anteriores. **Não é a instrução operacional para a apresentação atual**: pode mencionar rotas, ambientes, métricas, credenciais de protótipo antigo ou integrações remotas sem homologação. Os documentos acadêmicos acima são a referência vigente.
 
-O armazenamento é `localStorage`, sob a chave `buscapet.v2`. **Não existe banco de dados central, servidor de aplicação, login seguro ou autorização no servidor.** O login e a separação das funções por perfil são apenas simulações de interface local; não use senhas reais. Os dados e credenciais não são protegidos contra quem usa o navegador. A sessão permanece no armazenamento local até sair.
 
-Os dados não circulam entre pessoas ou dispositivos. Cada navegador possui seu próprio conjunto de registros. Alterações podem ser feitas pelas ferramentas de desenvolvedor. O mapa é interativo, mas ilustrativo: os pontos representam regiões aproximadas, sem GPS ou coordenadas reais; novos avistamentos podem atualizar o mapa em outras abas da mesma origem, não em outros dispositivos. Os estabelecimentos continuam ilustrativos. O chat não envia mensagens em tempo real pela internet; GPS, notificações, pagamentos e atendimento externo ainda não existem.
+SPA em JavaScript e Vite para publicar e acompanhar buscas por animais. O modo conectado usa Supabase Auth, PostgreSQL com RLS e o bucket privado `pet-media`. A homologação online isolada ainda não está configurada. **Não copie valores de `.env` para uma demonstração nem aponte testes para produção.** Em build de produção sem as duas variáveis do Supabase, a aplicação mostra uma mensagem de configuração e não abre o protótipo local.
 
-Use dados fictícios, inclusive no cadastro. Nome completo, telefone, endereço, foto e senha de demonstração ficam sem proteção adequada no armazenamento local do navegador; não informe dados reais. As validações de e-mail, telefone e CEP verificam formato, não existência ou titularidade. A recuperação por e-mail ainda não está disponível. Os formulários do BuscaPet não enviam dados a um servidor. O carregamento do VLibras acessa o serviço externo para fornecer tradução, sujeito às políticas do serviço. Publicar o código no GitHub Pages não implementa um backend. O provedor de hospedagem pode tratar dados técnicos de acesso segundo sua própria política.
+## Iniciar o modo conectado
 
-## Publicação no GitHub
+Requer Node.js 22 ou superior. Em PowerShell:
 
-1. Crie ou abra o repositório escolhido pela equipe.
-2. Envie **o conteúdo desta pasta**. Os arquivos `index.html`, `style.css` e `script.js` devem ficar juntos na raiz. Inclua também a pasta `assets`, que contém as fotos dos exemplos.
-3. Faça o commit.
-4. Para hospedar: Settings → Pages → Build and deployment → Deploy from a branch.
-5. Escolha a branch que contém os arquivos, normalmente `main`, e a pasta `/(root)`.
-6. Salve e aguarde o endereço informado pelo GitHub.
+```powershell
+npm.cmd ci
+# Só depois de criar e autorizar um projeto Supabase isolado:
+Copy-Item .env.example .env.local
+npm.cmd run dev -- --host 127.0.0.1
+```
 
-O arquivo `.nojekyll` permite servir estes arquivos estáticos diretamente. Não envie exportações `buscapet-dados-*.json`, dados pessoais, credenciais ou arquivos locais de testes. O `.gitignore` ajuda a excluir esses itens quando o envio é feito via Git.
+Abra a URL impressa pelo Vite. Substitua os dois valores de exemplo em `.env.local` por URL e chave publicável do projeto de homologação isolado. `.env.local` e `.env` são ignorados pelo Git. Jamais coloque `service_role`, secret key, senha de banco ou segredo de Worker em variáveis `VITE_` ou arquivos do frontend. Reinicie o servidor após mudar o ambiente.
 
-Fontes: [configuração do GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) e [arquivo de entrada](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site), consultadas em 25/09/2026.
+Configure manualmente **Authentication → URL Configuration** no projeto isolado para o host e a porta usados pelo Vite. O cadastro retorna para `/#login` e a recuperação de senha usa `/?auth=reset`. A confirmação de e-mail e o envio de mensagens dependem da configuração de Auth/SMTP hospedada. Consulte o [estado e roteiro da homologação](docs/DEMO_HOMOLOGACAO.md) antes de cadastrar uma conta de teste.
 
-## Onde estudar o código
+## O que funciona no modo conectado
 
-| Arquivo | Responsabilidade |
+- Cadastro, login, sessão persistente, logout, pedido de recuperação e redefinição por Supabase Auth, conforme a configuração de e-mail do projeto.
+- Feed público e detalhe de ocorrências, com pesquisa por texto e filtros.
+- Animais próprios: cadastro, listagem, detalhe, edição e exclusão confirmada.
+- Ocorrências: publicação, detalhe, edição e alteração de situação pelo responsável.
+- Fotografias: validação até 5 MiB, upload para bucket privado e leitura autorizada, sem URL pública permanente.
+- Fotos privadas do animal, tema claro/escuro/automático e painel de acessibilidade estão implementados localmente. A persistência de fotos de animais requer a migration incremental descrita em [FINALIZACAO_MVP_20261021.md](docs/FINALIZACAO_MVP_20261021.md), ainda não aplicada remotamente.
+- Avistamento por usuário autenticado e leitura pelo responsável autorizado.
+
+A autorização efetiva depende dos grants, das políticas RLS e das RPCs da migration. O frontend nunca recebe chave privilegiada. Os testes locais não substituem a homologação de escrita e isolamento com duas identidades no projeto remoto.
+
+O relato de visitante **sem conta** ainda depende de Cloudflare Worker, Turnstile e Edge Function, que não foram publicados. Denúncias e moderação têm código e migrations locais, mas dependem da aplicação dos contratos e de homologação no ambiente conectado; favoritos e tarefas continuam indisponíveis nesse modo. Nenhum dado fictício do protótipo é exibido como ocorrência remota.
+
+## Prévia da interface moderna para apresentação
+
+Execute `npm.cmd run preview:local` e abra `http://127.0.0.1:5173/#home`. O comando isola o `.env` e abre a `BPRealApp` com dados somente neste navegador, sem conta real ou senha. Para outra porta: `npm.cmd run preview:local -- 5186`.
+
+Antes da apresentação, entre em **Minha conta → Limpar dados desta prévia** e confirme a exclusão. Na tela de entrada, escolha **Tutor Local**. Cadastre um animal com foto; publique um alerta de animal desaparecido e use **Marcar centro do mapa** com consentimento. Demonstre feed, busca, filtros, detalhe, mapa e avistamento. No detalhe do alerta, crie uma **denúncia de teste**. Saia, escolha **Administrador Local**, abra **Denúncias**, registre a decisão e confira o reflexo no feed e no mapa. Em **Ocorrências**, restaure a publicação e consulte o histórico. A lista textual do mapa continua disponível quando os blocos do OpenStreetMap não carregam. Use somente dados e fotos autorizados. A limpeza remove também denúncias, decisões e rascunhos locais; preferências de acessibilidade permanecem no dispositivo. Os perfis locais não são contas ou permissões do Supabase.
+
+Para gerar os mesmos fluxos como arquivos estáticos, execute `npm.cmd run build:presentation` e `npm.cmd run preview`. A Vercel usa esse build pelo `vercel.json`. O modo `presentation` ignora a configuração Supabase mesmo quando variáveis `VITE_SUPABASE_*` existem no ambiente; `npm.cmd run build` preserva o modo conectado para evolução posterior.
+
+## Modo local de contingência legado
+
+Para uma demonstração isolada, mesmo quando existe `.env` no checkout, execute `npm.cmd run demo`. O comando inicia o Vite em `127.0.0.1:5173` sem carregar o arquivo de ambiente do projeto; para outra porta, use `npm.cmd run demo -- 5180`. Confira o aviso de **protótipo local** antes de apresentar. As credenciais e os registros abaixo são fictícios e ficam somente no navegador.
+
+Sem `.env` e `.env.local` com as variáveis `VITE_SUPABASE_*`, reinicie o Vite. O aviso visual identifica o **protótipo local**, cujos dados ficam neste navegador. As contas fictícias abaixo usam somente a senha de demonstração `BuscaPetDemo!`:
+
+| Papel | E-mail |
 |---|---|
-| `index.html` | Estrutura das telas, importação do CSS e do JavaScript |
-| `style.css` | Cores, cards, formulários e adaptação para celular e desktop |
-| `assets/` | Fotos locais dos exemplos originais e dos alertas fictícios adicionais |
-| `script.js` | Dados, termos, navegação, formulários, busca, denúncias e moderação |
-| `docs/ROTEIRO.md` | Sequência para a demonstração em sala |
-| `docs/ARQUITETURA.md` | Explicação da implementação e evolução do banco |
-| `docs/JURIDICO.md` | Decisões jurídicas do projeto e pendências |
-| `docs/TESTES.md` | Verificações e limites da validação |
+| Tutor | `tutor@demo.buscapet` |
+| Colaborador | `colaborador@demo.buscapet` |
+| Moderador | `moderador@demo.buscapet` |
 
-O `script.js` está dividido em três partes comentadas. `BPStore` centraliza as alterações dos dados. `BPLegal` contém as minutas. A parte de interface consulta os registros e monta as telas. A função `escape` transforma entradas em texto seguro antes de inseri-las no HTML.
+Esse modo simula cadastro, login, pistas, tarefas, denúncias e moderação. Não oferece autenticação ou colaboração segura entre dispositivos. Não use dados pessoais nem senhas reais nele.
 
-Quando houver API, as operações de `BPStore` poderão chamar o servidor, mantendo os fluxos da interface. Não é preciso instalar framework nem rodar compilação para usar esta versão.
+## Verificações
 
-As minutas são acadêmicas e precisam de revisão jurídica antes do lançamento público. O projeto ainda não declara conformidade jurídica integral.
+```powershell
+npm.cmd run check
+npm.cmd test
+npm.cmd run build
+```
+
+Com Vite conectado já iniciado e Chrome/Edge disponível, `npm.cmd run test:browser:real` testa rotas públicas, guarda de rota privada, ausência de seeds, teclado e larguras de 360 a 1440 px. Ele faz uma tentativa de login inválido, sem criar contas ou dados. Para repetir o teste de navegador do protótipo local, inicie um servidor sem as variáveis Supabase e execute `npm.cmd run test:browser` com `BASE_URL` apontando para ele. Os resultados remotos e os limites de Auth estão em [MVP_HOMOLOGACAO_20261021.md](docs/MVP_HOMOLOGACAO_20261021.md).
+
+## Código e documentação
+
+`src/auth.js` preserva a API `BPAuth`; `src/remote-store.js` reúne as operações de Data API e Storage; `src/real-app.js` apresenta o modo conectado; `src/store.js` e `src/app.js` preservam o protótipo offline; `src/events.js` escolhe o modo. A migration inicial está em `supabase/migrations/20261020233414_initial_buscapet_schema.sql`; o checkout contém migrations incrementais posteriores.
+
+Veja [DEMO_HOMOLOGACAO.md](docs/DEMO_HOMOLOGACAO.md), [ARQUITETURA.md](docs/ARQUITETURA.md), [HOMOLOGACAO_MIGRATION.md](docs/HOMOLOGACAO_MIGRATION.md) e [SPRINT2_2_INGRESS.md](docs/SPRINT2_2_INGRESS.md). Parte da documentação anterior descreve o estado histórico da Sprint 2; confirme sempre a data dos relatórios antes de tratar resultados antigos como atuais.
+
+O estado acadêmico atual, resultados e limites estão em [VERIFICACAO_ACADEMICA_2026-11-16.md](docs/VERIFICACAO_ACADEMICA_2026-11-16.md), com a [matriz de rastreabilidade](docs/MATRIZ_RASTREABILIDADE.md). [FINALIZACAO_MVP_20261021.md](docs/FINALIZACAO_MVP_20261021.md) permanece como registro histórico.

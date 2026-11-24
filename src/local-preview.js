@@ -1,0 +1,781 @@
+// Explicit, browser-only preview for the modern UI. It never calls Supabase.
+if ((import.meta.env.MODE === "presentation" || import.meta.env.VITE_BUSCAPET_LOCAL_PREVIEW === "true") && !window.BPSupabase?.configured) {
+  const KEY = "bp.modern-preview.v1";
+  const SESSION = "bp.modern-preview.session";
+  const SESSION_ID = "bp.modern-preview.account-id";
+  const RESET_ID = "bp.modern-preview.reset-account";
+  const USER_ID = "00000000-0000-4000-8000-000000000001";
+  const ADMIN_ID = "00000000-0000-4000-8000-000000000002";
+  const DEMO_PASSWORD = "BuscaPet@2026";
+  const SAMPLE_TUTOR = { id: USER_ID, name: "Tutor BuscaPet", email: "tutor@buscapet.test", role: "tutor", status: "active" };
+  const SAMPLE_ADMIN = { id: ADMIN_ID, name: "Administrador BuscaPet", email: "admin@buscapet.test", role: "admin", status: "active" };
+  const listeners = new Set();
+  const initial = () => ({ pets: [], occurrences: [], sightings: [], petPhotos: [], occurrencePhotos: [], occurrencePoints: [], sightingPoints: [], reports: [], adminHistory: [], tutorStatus: "active", accounts: [], businesses: [], petCards: [], careEvents: [] });
+  // Exemplos fictícios da apresentação. Todos os dados continuam apenas neste navegador.
+  const demoPhotos = Object.freeze({
+    "example/hex.png": new URL("../assets/hex.png", import.meta.url).href,
+    "example/bold.png": new URL("../assets/bold.png", import.meta.url).href,
+    "example/gargamel.png": new URL("../assets/gargamel.png", import.meta.url).href,
+  });
+  const sampleData = () => {
+    const ago = (days) => new Date(Date.now() - days * 86400000).toISOString();
+    const ids = {
+      hex: "10000000-0000-4000-8000-000000000001",
+      bold: "10000000-0000-4000-8000-000000000002",
+      gargamel: "10000000-0000-4000-8000-000000000003",
+      lost: "20000000-0000-4000-8000-000000000001",
+      found: "20000000-0000-4000-8000-000000000002",
+      reunited: "20000000-0000-4000-8000-000000000003",
+      reviewed: "30000000-0000-4000-8000-000000000001",
+      pending: "30000000-0000-4000-8000-000000000002",
+    };
+    const pet = (id, name, coat, size) => ({
+      id, owner_id: USER_ID, name, species: "dog", breed: "Sem raça definida",
+      sex: "unknown", size, coat_description: coat,
+      distinctive_features: name === "Hex" ? "Dócil, atende pelo nome e costuma usar coleira." : name === "Bold" ? "Pelagem escura, porte médio e orelhas levantadas." : "Porte pequeno, pelagem curta e comportamento tranquilo.",
+      created_at: ago(24), updated_at: ago(3),
+    });
+    const occurrence = (id, petId, type, status, city, region, reference, description, days) => ({
+      id, owner_id: USER_ID, pet_id: petId, type, status, visibility: "public",
+      city, region, public_reference: reference, description,
+      reward_cents: 0, last_seen_at: ago(days), created_at: ago(days), updated_at: ago(days),
+    });
+    const photo = (id, key, parent, file) => ({
+      id, [key]: parent, uploaded_by: USER_ID, storage_path: "example/" + file + ".png",
+      mime_type: "image/png", byte_size: 300000, created_at: ago(20), is_cover: true,
+    });
+    return {
+      ...initial(),
+      demoExamplesVersion: 1,
+      careDemoVersion: 1,
+      copyPolishVersion: 1,
+      careEvents: [
+        { id: "70000000-0000-4000-8000-000000000001", owner_id: USER_ID, pet_id: ids.hex,
+          title: "Revisar a carteira de vacinação", category: "vaccination",
+          date: new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10),
+          notes: "Conferir as datas anotadas com o veterinário.", completed_at: null, created_at: ago(1) },
+        { id: "70000000-0000-4000-8000-000000000002", owner_id: USER_ID, pet_id: ids.bold,
+          title: "Banho programado", category: "grooming",
+          date: new Date(Date.now() + 10 * 86400000).toISOString().slice(0, 10),
+          notes: "Lembrar do horário combinado.", completed_at: null, created_at: ago(1) },
+      ],
+      pets: [
+        pet(ids.hex, "Hex", "Pelagem clara", "medium"),
+        pet(ids.bold, "Bold", "Pelagem escura", "medium"),
+        pet(ids.gargamel, "Gargamel", "Pelagem curta", "small"),
+      ],
+      occurrences: [
+        occurrence(ids.lost, ids.hex, "lost", "active", "Campo Grande", "Carandá Bosque",
+          "Próximo ao Parque das Nações Indígenas", "Hex desapareceu nas proximidades do parque. É dócil e pode estar assustado. Se tiver informações, registre um avistamento.", 2),
+        occurrence(ids.found, ids.bold, "found", "active", "Campo Grande", "Centro",
+          "Proximidades da Praça Ary Coelho", "Cão encontrado na região central. Estamos procurando a família responsável. Confira as características antes de entrar em contato.", 4),
+        occurrence(ids.reunited, ids.gargamel, "lost", "reunited", "Campo Grande", "Amambai",
+          "Região da Orla Morena", "Gargamel foi localizado e está novamente com sua família. A busca foi encerrada.", 9),
+      ],
+      petPhotos: [
+        photo("40000000-0000-4000-8000-000000000001", "pet_id", ids.hex, "hex"),
+        photo("40000000-0000-4000-8000-000000000002", "pet_id", ids.bold, "bold"),
+        photo("40000000-0000-4000-8000-000000000003", "pet_id", ids.gargamel, "gargamel"),
+      ],
+      occurrencePhotos: [
+        photo("50000000-0000-4000-8000-000000000001", "occurrence_id", ids.lost, "hex"),
+        photo("50000000-0000-4000-8000-000000000002", "occurrence_id", ids.found, "bold"),
+        photo("50000000-0000-4000-8000-000000000003", "occurrence_id", ids.reunited, "gargamel"),
+      ],
+      occurrencePoints: [
+        { occurrence_id: ids.lost, latitude: -20.4505, longitude: -54.5767, radius_m: 900, public_description: "Região do Parque das Nações Indígenas" },
+        { occurrence_id: ids.found, latitude: -20.4631, longitude: -54.6152, radius_m: 900, public_description: "Região da Praça Ary Coelho" },
+        { occurrence_id: ids.reunited, latitude: -20.4650, longitude: -54.6310, radius_m: 900, public_description: "Região da Orla Morena" },
+      ],
+      sightings: [
+        { id: ids.reviewed, occurrence_id: ids.lost, reporter_id: USER_ID,
+          observed_at: ago(1), area_description: "Próximo à entrada do parque",
+          direction: "Seguindo em direção à avenida", description: "Um cão parecido foi visto caminhando perto da entrada.",
+          status: "reviewed", created_at: ago(1) },
+        { id: ids.pending, occurrence_id: ids.lost, reporter_id: USER_ID,
+          observed_at: ago(0.5), area_description: "Ruas próximas ao Carandá Bosque",
+          direction: "Não informada", description: "Morador relatou ter visto um animal parecido.",
+          status: "pending", created_at: ago(0.5) },
+      ],
+      sightingPoints: [
+        { sighting_id: ids.reviewed, latitude: -20.4487, longitude: -54.5742, radius_m: 900,
+          public_description: "Região aproximada do avistamento no parque", approved_by_tutor: true },
+      ],
+      reports: [
+        { id: "60000000-0000-4000-8000-000000000001", occurrence_id: ids.found,
+          reporter_id: USER_ID, category: "other",
+          description: "Solicitação de análise do anúncio: verificar se as informações publicadas estão completas.",
+          report_status: "open", created_at: ago(0.7), test_record: true },
+      ],
+    };
+  };
+  const originalDemoDescriptions = new Map([
+    ["20000000-0000-4000-8000-000000000001", [
+      "Hex desapareceu na região do parque. É dócil e pode estar assustado. Alerta fictício para apresentação.",
+      "Hex desapareceu nas proximidades do parque. É dócil e pode estar assustado. Se tiver informações, registre um avistamento.",
+    ]],
+    ["20000000-0000-4000-8000-000000000002", [
+      "Um cão foi encontrado na região central. Procuramos a família responsável. Registro fictício para apresentação.",
+      "Cão encontrado na região central. Estamos procurando a família responsável. Confira as características antes de entrar em contato.",
+    ]],
+    ["20000000-0000-4000-8000-000000000003", [
+      "Gargamel foi localizado e voltou para casa. Exemplo de busca encerrada com sucesso.",
+      "Gargamel foi localizado e está novamente com sua família. A busca foi encerrada.",
+    ]],
+  ]);
+  const improveDemoText = (data) => {
+    for (const row of data.occurrences) {
+      const [old, next] = originalDemoDescriptions.get(row.id) || [];
+      if (old && row.description === old) row.description = next;
+    }
+    for (const pet of data.pets) {
+      if (pet.distinctive_features === "Animal cadastrado para a apresentação do BuscaPet.") {
+        pet.distinctive_features = pet.name === "Hex"
+          ? "Dócil, atende pelo nome e costuma usar coleira."
+          : pet.name === "Bold" ? "Pelagem escura, porte médio e orelhas levantadas."
+            : "Porte pequeno, pelagem curta e comportamento tranquilo.";
+      }
+    }
+    for (const report of data.reports) {
+      if (report.id === "60000000-0000-4000-8000-000000000001"
+        && report.description === "Denúncia fictícia para demonstrar a análise e a moderação de alertas.")
+        report.description = "Solicitação de análise do anúncio: verificar se as informações publicadas estão completas.";
+    }
+  };
+  const read = () => {
+    try {
+      const stored = localStorage.getItem(KEY);
+      if (stored === null) {
+        const data = sampleData();
+        localStorage.setItem(KEY, JSON.stringify(data));
+        return data;
+      }
+      const data = { ...initial(), ...JSON.parse(stored) };
+      if (data.demoExamplesVersion !== 1) {
+        const examples = sampleData();
+        for (const [key, idKey] of [
+          ["pets", "id"], ["occurrences", "id"], ["sightings", "id"],
+          ["petPhotos", "id"], ["occurrencePhotos", "id"],
+          ["occurrencePoints", "occurrence_id"], ["sightingPoints", "sighting_id"],
+          ["reports", "id"],
+        ]) {
+          const known = new Set(data[key].map((row) => row[idKey]));
+          data[key].push(...examples[key].filter((row) => !known.has(row[idKey])));
+        }
+        data.demoExamplesVersion = 1;
+        localStorage.setItem(KEY, JSON.stringify(data));
+      }
+      if (data.careDemoVersion !== 1) {
+        const examples = sampleData().careEvents;
+        const ids = new Set(data.pets.map((pet) => pet.id));
+        const existing = new Set(data.careEvents.map((event) => event.id));
+        data.careEvents.push(...examples.filter((event) => ids.has(event.pet_id) && !existing.has(event.id)));
+        data.careDemoVersion = 1;
+        localStorage.setItem(KEY, JSON.stringify(data));
+      }
+      if (data.copyPolishVersion !== 1) {
+        improveDemoText(data);
+        data.copyPolishVersion = 1;
+        localStorage.setItem(KEY, JSON.stringify(data));
+      }
+      return data;
+    } catch { throw Error("Não foi possível ler os dados deste dispositivo."); }
+  };
+  const write = (data) => {
+    try { localStorage.setItem(KEY, JSON.stringify(data)); }
+    catch { throw Error("O armazenamento deste navegador está cheio ou indisponível."); }
+  };
+  const copy = (row) => row == null ? null : structuredClone(row);
+  const currentRole = () => sessionStorage.getItem(SESSION);
+  const currentId = () => sessionStorage.getItem(SESSION_ID) || USER_ID;
+  const getRegistered = (email) => read().accounts.find((a) => a.email === String(email || "").trim().toLowerCase()) || null;
+  const findAccount = (email) => {
+    const key = String(email || "").trim().toLowerCase();
+    return key === SAMPLE_TUTOR.email ? SAMPLE_TUTOR : key === SAMPLE_ADMIN.email ? SAMPLE_ADMIN : getRegistered(key);
+  };
+  const currentTutor = () => currentId() === USER_ID
+    ? { ...SAMPLE_TUTOR, status: read().tutorStatus }
+    : read().accounts.find((a) => a.id === currentId());
+  const requireSession = () => {
+    if (currentRole() === "admin") return ADMIN_ID;
+    if (currentRole() === "partner") return requirePartner();
+    if (currentRole() !== "tutor" || currentTutor()?.status !== "active")
+      throw Error("Entre com sua conta de tutor para continuar.");
+    return currentTutor().id;
+  };
+  const requireAdmin = () => {
+    if (currentRole() !== "admin") throw Error("Acesso restrito à administração.");
+    return ADMIN_ID;
+  };
+
+  const BUSINESS_CATEGORIES = Object.freeze({
+    petshop: "Pet shop", veterinary: "Clínica veterinária",
+    grooming: "Banho e tosa", boarding: "Hospedagem e creche",
+    training: "Adestramento", other: "Outros serviços pet",
+  });
+  const validateBusiness = (input) => {
+    const str = (field, max) => String(input?.[field] || "").trim().slice(0, max + 1);
+    const name = str("name", 100), category = str("category", 32);
+    const city = str("city", 80), region = str("region", 100);
+    const address = str("address", 200), description = str("description", 500);
+    const rawPhone = str("phone", 30).replace(/\D/g, "");
+    const phone = rawPhone.startsWith("55") && [12, 13].includes(rawPhone.length) ? rawPhone.slice(2) : rawPhone;
+    const website = str("website", 200);
+    if (name.length < 3 || name.length > 100) throw Error("Informe o nome comercial (3 a 100 caracteres).");
+    if (!Object.hasOwn(BUSINESS_CATEGORIES, category)) throw Error("Selecione um tipo de estabelecimento válido.");
+    if (city.length < 2 || city.length > 80 || region.length < 2 || region.length > 100
+      || address.length < 8 || address.length > 200) throw Error("Informe cidade, bairro e endereço comercial completos.");
+    if (!/^[1-9][0-9]{9,10}$/.test(phone)) throw Error("Informe um telefone brasileiro com DDD válido.");
+    if (description.length < 20 || description.length > 500) throw Error("Descreva os serviços oferecidos (20 a 500 caracteres).");
+    if (website && (!/^https?:\/\//i.test(website) || (() => {
+      try { return !new URL(website).hostname.includes("."); } catch { return true; }
+    })())) throw Error("Informe um site iniciado por https:// ou deixe em branco.");
+    if (input?.publishConsent !== true) throw Error("Autorize a divulgação dos dados comerciais fornecidos.");
+    return { name, category, city, region, address, description, phone: "55" + phone, website };
+  };
+  const currentPartner = () => currentRole() === "partner"
+    ? read().accounts.find((account) => account.id === currentId() && account.role === "partner") : null;
+  const requirePartner = () => {
+    const account = currentPartner();
+    if (!account || account.status !== "active") throw Error("Entre com uma conta empresarial ativa para continuar.");
+    return account.id;
+  };
+  const hex = (bytes) => [...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  const makeSalt = () => hex(crypto.getRandomValues(new Uint8Array(16)));
+  const derive = async (password, salt) => {
+    const material = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
+    return hex(new Uint8Array(await crypto.subtle.deriveBits({
+      name: "PBKDF2", salt: new TextEncoder().encode(salt), iterations: 120000, hash: "SHA-256",
+    }, material, 256)));
+  };
+  const notify = (kind) => listeners.forEach((listener) => listener(auth.getCurrentUser(), { kind, relevant: true }));
+  async function demoSignIn(email, password) {
+    const account = findAccount(email);
+    const valid = account && ([USER_ID, ADMIN_ID].includes(account.id)
+      ? password === DEMO_PASSWORD
+      : await derive(password, account.salt) === account.passwordHash);
+    if (!valid) throw Error("E-mail ou senha inválidos.");
+    if (account.status !== "active" || (account.id === USER_ID && read().tutorStatus !== "active"))
+      throw Error("Esta conta está desativada.");
+    sessionStorage.setItem(SESSION, account.role);
+    sessionStorage.setItem(SESSION_ID, account.id);
+    notify("signed-in");
+    return auth.getCurrentUser();
+  }
+  async function demoSignUp(input) {
+    const name = String(input.name || "").trim(), email = String(input.email || "").trim().toLowerCase();
+    const password = String(input.password || "");
+    if (name.length < 2 || name.length > 80) throw Error("Informe seu nome completo.");
+    if (!email.includes("@") || !email.includes(".") || email.includes(" ")) throw Error("Informe um e-mail válido.");
+    if (password.length < 8 || password !== input.passwordConfirmation) throw Error("Confirme a senha com pelo menos oito caracteres.");
+    if (!input.acceptTerms || !input.acceptPrivacy) throw Error("Aceite os Termos e a Política de Privacidade.");
+    if (findAccount(email)) throw Error("Já existe uma conta com esse e-mail.");
+    const recoveryCode = hex(crypto.getRandomValues(new Uint8Array(6))).toUpperCase();
+    const salt = makeSalt(), recoverySalt = makeSalt();
+    const role = input.role === "parceiro" ? "partner" : "tutor";
+    const businessDetails = role === "partner" ? validateBusiness(input.business) : null;
+    const account = { id: crypto.randomUUID(), name, email, role, status: "active",
+      salt, passwordHash: await derive(password, salt),
+      recoverySalt, recoveryHash: await derive(recoveryCode, recoverySalt), created_at: new Date().toISOString() };
+    const data = read(); data.accounts.push(account);
+    if (businessDetails) data.businesses.push({
+      ...businessDetails, id: crypto.randomUUID(), owner_id: account.id, status: "pending",
+      created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+    });
+    write(data);
+    return { id: account.id, name, email, recoveryCode, needsEmailConfirmation: false };
+  }
+  async function demoRequestPasswordReset(email, code) {
+    const account = getRegistered(email);
+    if (!account || !code || await derive(String(code).trim().toUpperCase(), account.recoverySalt) !== account.recoveryHash)
+      throw Error("Confira o e-mail e o código de recuperação recebido ao criar a conta.");
+    sessionStorage.setItem(RESET_ID, account.id);
+    return { message: "Código confirmado. Defina a nova senha." };
+  }
+  async function demoUpdatePassword(password, confirmation) {
+    const id = sessionStorage.getItem(RESET_ID);
+    if (!id) throw Error("Confirme seu código de recuperação primeiro.");
+    if (password.length < 8 || password !== confirmation) throw Error("Use uma senha de ao menos oito caracteres e confirme.");
+    const data = read(), account = data.accounts.find((a) => a.id === id);
+    if (!account) throw Error("Conta não encontrada neste navegador.");
+    account.salt = makeSalt(); account.passwordHash = await derive(password, account.salt);
+    write(data); sessionStorage.removeItem(RESET_ID);
+    return { changed: true };
+  }
+
+  const validDate = (date) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(date || ""))) return false;
+    const parsed = new Date(String(date) + "T00:00:00Z");
+    return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === date
+      && parsed.getUTCFullYear() >= 1900 && parsed.getUTCFullYear() <= 2100;
+  };
+  const stringField = (value, max, label) => {
+    const text = String(value ?? "").trim();
+    if (text.length > max) throw Error(label + " deve ter até " + max + " caracteres.");
+    return text;
+  };
+  const normalizeCard = (card) => {
+    const birth_date = stringField(card.birth_date, 10, "Data de nascimento");
+    if (birth_date && !validDate(birth_date)) throw Error("Informe uma data de nascimento válida.");
+    const weight_kg = stringField(card.weight_kg, 8, "Peso");
+    if (weight_kg && (!/^\d{1,3}(?:[.,]\d{1,2})?$/.test(weight_kg)
+      || Number(weight_kg.replace(",", ".")) <= 0)) throw Error("Informe um peso válido em kg.");
+    return { birth_date, weight_kg,
+      microchip: stringField(card.microchip, 40, "Microchip"),
+      vaccines: stringField(card.vaccines, 500, "Vacinas"),
+      allergies: stringField(card.allergies, 500, "Alergias"),
+      medications: stringField(card.medications, 500, "Medicamentos"),
+      notes: stringField(card.notes, 600, "Observações") };
+  };
+  const CARE_CATEGORIES = new Set(["vaccination", "vet", "grooming", "medication", "other"]);
+  const normalizeCare = (input) => {
+    const title = stringField(input.title, 100, "Título");
+    const date = stringField(input.date, 10, "Data");
+    const category = String(input.category || "");
+    const notes = stringField(input.notes, 300, "Observações");
+    if (title.length < 3) throw Error("Informe um título com pelo menos 3 caracteres.");
+    if (!validDate(date)) throw Error("Informe uma data válida.");
+    if (!CARE_CATEGORIES.has(category)) throw Error("Selecione um tipo de cuidado válido.");
+    return { title, category, date, notes };
+  };
+  const mine = (rows, id) => rows.find((row) => row.id === id && row.owner_id === requireSession());
+  const found = (row, label) => {
+    if (!row) throw Error(`${label} não encontrado.`);
+    return row;
+  };
+  const update = (collection, id, patch, label) => {
+    const data = read();
+    const row = found(mine(data[collection], id), label);
+    Object.assign(row, patch, { updated_at: new Date().toISOString() });
+    write(data);
+    return copy(row);
+  };
+  const photoDb = () => new Promise((resolve, reject) => {
+    const request = indexedDB.open("bp.modern-preview.photos", 1);
+    request.onupgradeneeded = () => request.result.createObjectStore("photos");
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(Error("Fotografias locais indisponíveis neste navegador."));
+  });
+  const photoOperation = async (mode, action) => {
+    const db = await photoDb();
+    try {
+      return await new Promise((resolve, reject) => {
+        const transaction = db.transaction("photos", mode);
+        const request = action(transaction.objectStore("photos"));
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(Error("Não foi possível acessar a fotografia local."));
+        transaction.onerror = () => reject(Error("Não foi possível salvar a fotografia local."));
+      });
+    } finally { db.close(); }
+  };
+  const savePhoto = async (collection, parentKey, parentId, file) => {
+    requireSession();
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || !file.size || file.size > 5 * 1024 * 1024)
+      throw Error("Use JPEG, PNG ou WebP de até 5 MiB.");
+    const data = read();
+    const siblings = data[collection].filter((row) => row[parentKey] === parentId);
+    if (siblings.length >= 5) throw Error("O limite é de cinco fotografias por registro.");
+    const row = { id: crypto.randomUUID(), [parentKey]: parentId, uploaded_by: requireSession(),
+      storage_path: `local/${crypto.randomUUID()}`, mime_type: file.type, byte_size: file.size,
+      created_at: new Date().toISOString(), is_cover: siblings.length === 0 };
+    await photoOperation("readwrite", (store) => store.put(file, row.storage_path));
+    data[collection].push(row);
+    try { write(data); }
+    catch (error) { await photoOperation("readwrite", (store) => store.delete(row.storage_path)); throw error; }
+    return copy(row);
+  };
+  const removePhoto = async (collection, id) => {
+    requireSession();
+    const data = read();
+    const row = found(data[collection].find((photo) => photo.id === id && photo.uploaded_by === requireSession()), "Fotografia");
+    data[collection] = data[collection].filter((photo) => photo.id !== id);
+    write(data);
+    if (!data.petPhotos.some((photo) => photo.storage_path === row.storage_path)
+      && !data.occurrencePhotos.some((photo) => photo.storage_path === row.storage_path))
+      await photoOperation("readwrite", (store) => store.delete(row.storage_path));
+    return true;
+  };
+  const auth = {
+    ready: Promise.resolve(),
+    getSession: () => currentRole() ? { userId: currentRole() === "admin" ? ADMIN_ID : currentId() } : null,
+    getCurrentUser: () => {
+      if (currentRole() === "admin") return { ...SAMPLE_ADMIN, roles: ["administrador", "tutor"], activeRole: "administrador", emailVerified: false };
+      if (currentRole() === "partner") {
+        const a = currentPartner();
+        return a ? { id: a.id, name: a.name, email: a.email, status: a.status,
+          emailVerified: false, roles: ["parceiro", "tutor"], activeRole: "parceiro" } : null;
+      }
+      if (currentRole() !== "tutor") return null;
+      const a = currentTutor();
+      return a ? { id: a.id, name: a.name, email: a.email, status: a.status,
+        emailVerified: false, roles: ["tutor"], activeRole: "tutor" } : null;
+    },
+    getActiveRole: () => currentRole() === "admin" ? "administrador" : currentRole() === "tutor" ? "tutor" : currentRole() === "partner" ? "parceiro" : null,
+    getRoles: () => currentRole() === "admin" ? ["administrador", "tutor"] : currentRole() === "tutor" ? ["tutor"] : currentRole() === "partner" ? ["parceiro", "tutor"] : [],
+    hasRole: (role) => currentRole() === "admin" ? ["administrador", "tutor"].includes(role) : (currentRole() === "tutor" && role === "tutor") || (currentRole() === "partner" && ["parceiro", "tutor"].includes(role)),
+    requireSession,
+    onChange: (listener) => { listeners.add(listener); return () => listeners.delete(listener); },
+    signIn: demoSignIn, signUp: demoSignUp,
+    requestPasswordReset: demoRequestPasswordReset,
+    canResetPassword: () => Boolean(sessionStorage.getItem(RESET_ID)),
+    updatePassword: demoUpdatePassword,
+    signOut: async () => {
+      const signedOutUserId = currentRole() === "admin" ? ADMIN_ID : currentId();
+      sessionStorage.removeItem(SESSION); sessionStorage.removeItem(SESSION_ID);
+      listeners.forEach((listener) => listener(null, { kind: "signed-out", relevant: true, signedOutUserId }));
+    },
+  };
+  const store = {
+
+    async getOwnBusiness() {
+      const id = requirePartner();
+      return copy(read().businesses.find((item) => item.owner_id === id) || null);
+    },
+    async updateOwnBusiness(input) {
+      const id = requirePartner(), details = validateBusiness(input);
+      const data = read(), business = found(data.businesses.find((item) => item.owner_id === id), "Empresa");
+      Object.assign(business, details, { status: "pending", updated_at: new Date().toISOString() });
+      delete business.review_reason;
+      write(data);
+      return copy(business);
+    },
+    async getApprovedBusiness(id) {
+      const companies = await this.listApprovedBusinesses();
+      return companies.find((item) => item.id === id) || null;
+    },
+    async listApprovedBusinesses() {
+      const data = read();
+      const active = new Set(data.accounts.filter((account) => account.status === "active").map((account) => account.id));
+      return copy(data.businesses
+        .filter((item) => item.status === "approved" && active.has(item.owner_id))
+        .map(({ id, name, category, city, region, address, phone, website, description }) =>
+          ({ id, name, category, city, region, address, phone, website, description })));
+    },
+    async listPublicOccurrences() { return copy(read().occurrences.filter((row) => row.visibility === "public").sort((a, b) => b.created_at.localeCompare(a.created_at))); },
+
+    async getPetCard(petId) {
+      const owner = requireSession();
+      found(mine(read().pets, petId), "Animal");
+      return copy(read().petCards.find((card) => card.pet_id === petId && card.owner_id === owner) || null);
+    },
+    async savePetCard(petId, fields) {
+      const owner = requireSession();
+      const data = read();
+      found(mine(data.pets, petId), "Animal");
+      const patch = normalizeCard(fields || {});
+      const current = data.petCards.find((card) => card.pet_id === petId && card.owner_id === owner);
+      if (current) Object.assign(current, patch, { updated_at: new Date().toISOString() });
+      else data.petCards.push({ pet_id: petId, owner_id: owner, ...patch, updated_at: new Date().toISOString() });
+      write(data);
+      return copy(data.petCards.find((card) => card.pet_id === petId && card.owner_id === owner));
+    },
+    async listCareEvents(petId = null) {
+      const owner = requireSession(), data = read();
+      if (petId) found(mine(data.pets, petId), "Animal");
+      return copy(data.careEvents.filter((event) => event.owner_id === owner && (!petId || event.pet_id === petId))
+        .sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title)));
+    },
+    async createCareEvent(fields) {
+      const owner = requireSession(), data = read();
+      found(mine(data.pets, fields.pet_id), "Animal");
+      const details = normalizeCare(fields);
+      const event = { id: crypto.randomUUID(), owner_id: owner, pet_id: fields.pet_id, ...details,
+        completed_at: null, created_at: new Date().toISOString() };
+      data.careEvents.push(event);
+      write(data);
+      return copy(event);
+    },
+    async setCareEventComplete(id, completed) {
+      const owner = requireSession(), data = read();
+      const event = found(data.careEvents.find((item) => item.id === id && item.owner_id === owner), "Compromisso");
+      event.completed_at = completed === true ? new Date().toISOString() : null;
+      write(data);
+      return copy(event);
+    },
+    async deleteCareEvent(id) {
+      const owner = requireSession(), data = read();
+      found(data.careEvents.find((item) => item.id === id && item.owner_id === owner), "Compromisso");
+      data.careEvents = data.careEvents.filter((item) => item.id !== id);
+      write(data);
+      return true;
+    },
+    async getPublicPosterData(occurrenceId) {
+      const data = read();
+      const row = data.occurrences.find((item) => item.id === occurrenceId && item.visibility === "public");
+      if (!row) return null;
+      const pet = data.pets.find((item) => item.id === row.pet_id);
+      const cover = data.occurrencePhotos.find((item) => item.occurrence_id === row.id && item.is_cover)
+        || data.occurrencePhotos.find((item) => item.occurrence_id === row.id);
+      return copy({ id: row.id, type: row.type, status: row.status, city: row.city, region: row.region,
+        public_reference: row.public_reference, description: row.description, last_seen_at: row.last_seen_at,
+        pet_name: pet?.name || "", species: pet?.species || "", size: pet?.size || "",
+        contact_whatsapp: row.contact_enabled === true && row.owner_id === currentId() && currentRole() ? row.contact_whatsapp : null,
+        photo_path: cover?.storage_path || null });
+    },
+    async listPossibleMatches(occurrenceId) {
+      const data = read();
+      const reference = data.occurrences.find((row) => row.id === occurrenceId
+        && row.visibility === "public" && row.status === "active");
+      if (!reference) return [];
+      const permitted = data.occurrences.filter((row) => row.visibility === "public" && row.status === "active");
+      const pets = data.pets.map(({ id, species, size, breed, coat_description }) =>
+        ({ id, species, size, breed, coat_description }));
+      return copy((window.BPMatch?.possibleMatches?.(reference, permitted, pets) || []).map(({ occurrence, score, reasons }) =>
+        ({ occurrence: { id: occurrence.id, type: occurrence.type, status: occurrence.status,
+          visibility: occurrence.visibility, city: occurrence.city, region: occurrence.region,
+          public_reference: occurrence.public_reference, description: occurrence.description,
+          last_seen_at: occurrence.last_seen_at }, score, reasons })));
+    },
+    async listOwnPets() { return copy(read().pets.filter((row) => row.owner_id === requireSession())); },
+    async getPet(id) { return copy(mine(read().pets, id)); },
+    async createPet(input) {
+      const data = read();
+      const row = { ...input, id: crypto.randomUUID(), owner_id: requireSession(), created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+      data.pets.push(row); write(data); return copy(row);
+    },
+    async updatePet(id, patch) { return update("pets", id, patch, "Animal"); },
+    async deletePet(id) {
+      const data = read(); found(mine(data.pets, id), "Animal");
+      const removedPhotos = data.petPhotos.filter((row) => row.pet_id === id);
+      data.pets = data.pets.filter((row) => row.id !== id);
+      data.petPhotos = data.petPhotos.filter((row) => row.pet_id !== id);
+      data.petCards = data.petCards.filter((row) => row.pet_id !== id);
+      data.careEvents = data.careEvents.filter((row) => row.pet_id !== id);
+      data.occurrences.forEach((row) => { if (row.pet_id === id) row.pet_id = null; });
+      write(data);
+      for (const photo of removedPhotos) {
+        if (!data.occurrencePhotos.some((row) => row.storage_path === photo.storage_path))
+          await photoOperation("readwrite", (store) => store.delete(photo.storage_path));
+      }
+      return true;
+    },
+    async listOwnOccurrences() { return copy(read().occurrences.filter((row) => row.owner_id === requireSession())); },
+    async getOccurrence(id) {
+      const row = read().occurrences.find((item) => item.id === id);
+      return row && (row.visibility === "public" || (row.owner_id === currentId() && ["tutor", "admin", "partner"].includes(currentRole())))
+        ? { ...copy(row), is_owner: row.owner_id === currentId() && ["tutor", "admin", "partner"].includes(currentRole()) } : null;
+    },
+    async createOccurrence(input) {
+      const data = read();
+      const row = { ...input, id: crypto.randomUUID(), owner_id: requireSession(), status: "active", created_at: new Date().toISOString(), updated_at: new Date().toISOString(), is_owner: true };
+      data.occurrences.push(row); write(data); return copy(row);
+    },
+    async updateOccurrence(id, patch) { return { ...update("occurrences", id, patch, "Alerta"), is_owner: true }; },
+    async setOccurrenceStatus(id, status) {
+      if (!["active", "located", "reunited", "closed"].includes(status)) throw Error("Situação inválida.");
+      update("occurrences", id, { status }, "Alerta"); return true;
+    },
+    async getOccurrencePublicLocation(id) {
+      const data = read(), occurrence = data.occurrences.find((row) => row.id === id);
+      if (!occurrence || (occurrence.visibility !== "public" && occurrence.owner_id !== (currentRole() ? currentId() : null)))
+        return null;
+      return copy(data.occurrencePoints.find((row) => row.occurrence_id === id) || null);
+    },
+    async saveOccurrencePublicLocation(id, point) {
+      const data = read(); found(mine(data.occurrences, id), "Alerta");
+      data.occurrencePoints = data.occurrencePoints.filter((row) => row.occurrence_id !== id);
+      const row = { occurrence_id: id, latitude: point.latitude, longitude: point.longitude, radius_m: 900, public_description: point.description || "" };
+      data.occurrencePoints.push(row); write(data); return copy(row);
+    },
+    async deleteOccurrencePublicLocation(id) {
+      const data = read(); found(mine(data.occurrences, id), "Alerta");
+      data.occurrencePoints = data.occurrencePoints.filter((row) => row.occurrence_id !== id); write(data); return true;
+    },
+    async listPublicMapPoints(filters = {}) {
+      const data = read();
+      const occurrencePoints = data.occurrencePoints.flatMap((point) => {
+        const occurrence = data.occurrences.find((row) => row.id === point.occurrence_id);
+        if (!occurrence || occurrence.visibility !== "public" || (filters.occurrenceId && filters.occurrenceId !== occurrence.id)
+          || (filters.city && !occurrence.city.toLowerCase().includes(filters.city.toLowerCase()))
+          || (filters.region && !occurrence.region.toLowerCase().includes(filters.region.toLowerCase()))
+          || (filters.status && filters.status !== occurrence.status)
+          || (filters.since && occurrence.last_seen_at < filters.since)) return [];
+        return [{ ...point, id: point.occurrence_id, category: "last-known", city: occurrence.city, region: occurrence.region,
+          title: "Última região conhecida", event_at: occurrence.last_seen_at, occurrence_status: occurrence.status,
+          description: point.public_description }];
+      });
+      const sightingPoints = data.sightingPoints.flatMap((point) => {
+        const sighting = data.sightings.find((row) => row.id === point.sighting_id && row.status === "reviewed");
+        const occurrence = data.occurrences.find((row) => row.id === sighting?.occurrence_id && row.visibility === "public");
+        if (!point.approved_by_tutor || !occurrence || (filters.occurrenceId && filters.occurrenceId !== occurrence.id)
+          || (filters.city && !occurrence.city.toLowerCase().includes(filters.city.toLowerCase()))
+          || (filters.region && !occurrence.region.toLowerCase().includes(filters.region.toLowerCase()))
+          || (filters.status && filters.status !== occurrence.status)
+          || (filters.since && sighting.observed_at < filters.since)) return [];
+        return [{ ...point, id: point.sighting_id, occurrence_id: occurrence.id, category: "sighting",
+          city: occurrence.city, region: occurrence.region, title: "Região de avistamento",
+          event_at: sighting.observed_at, occurrence_status: occurrence.status, description: point.public_description }];
+      });
+      return copy([...occurrencePoints, ...sightingPoints]);
+    },
+    async listSightings(id) {
+      const data = read();
+      found(mine(data.occurrences, id), "Alerta");
+      return copy(data.sightings.filter((row) => row.occurrence_id === id));
+    },
+    async createSighting(input) {
+      const data = read(); found(data.occurrences.find((row) => row.id === input.occurrence_id && row.visibility === "public" && row.status === "active"), "Alerta disponível para avistamento");
+      const row = { ...input, id: crypto.randomUUID(), reporter_id: requireSession(), status: "pending", created_at: new Date().toISOString() };
+      data.sightings.push(row); write(data); return copy(row);
+    },
+    async listSightingPublicLocations(ids) {
+      const data = read();
+      const authorized = (point) => {
+        const sighting = data.sightings.find((row) => row.id === point.sighting_id);
+        const occurrence = data.occurrences.find((row) => row.id === sighting?.occurrence_id);
+        return occurrence && ((currentRole() && occurrence.owner_id === currentId())
+          || (occurrence.visibility === "public" && sighting.status === "reviewed" && point.approved_by_tutor));
+      };
+      return copy(data.sightingPoints.filter((point) => ids.includes(point.sighting_id) && authorized(point)));
+    },
+    async saveSightingPublicLocation(id, point) {
+      const data = read();
+      found(data.sightings.find((row) => row.id === id && row.reporter_id === requireSession()), "Avistamento");
+      data.sightingPoints = data.sightingPoints.filter((point) => point.sighting_id !== id);
+      const row = { sighting_id: id, latitude: point.latitude, longitude: point.longitude, radius_m: 900, public_description: point.description || "", approved_by_tutor: false };
+      data.sightingPoints.push(row); write(data); return copy(row);
+    },
+    async reviewSighting(id, status) {
+      const data = read(); const row = found(data.sightings.find((item) => item.id === id), "Avistamento");
+      found(mine(data.occurrences, row.occurrence_id), "Alerta"); row.status = status; write(data); return copy(row);
+    },
+    async setSightingPublication(id, approved) {
+      const data = read(); const point = found(data.sightingPoints.find((row) => row.sighting_id === id), "Regiao");
+      const sighting = found(data.sightings.find((row) => row.id === id), "Avistamento");
+      found(mine(data.occurrences, sighting.occurrence_id), "Alerta");
+      if (sighting.status !== "reviewed") throw Error("Revise o avistamento antes de publicar a região.");
+      point.approved_by_tutor = approved === true; write(data); return copy(point);
+    },
+    async listPhotos(id) {
+      const data = read(), occurrence = data.occurrences.find((row) => row.id === id);
+      if (!occurrence || (occurrence.visibility !== "public" && occurrence.owner_id !== (currentRole() ? currentId() : null))) return [];
+      return copy(data.occurrencePhotos.filter((row) => row.occurrence_id === id));
+    },
+    async listPublicCoverPhotos(ids) {
+      const data = read(); const publicIds = new Set(data.occurrences.filter((row) => row.visibility === "public").map((row) => row.id));
+      return copy(data.occurrencePhotos.filter((row) => ids.includes(row.occurrence_id) && publicIds.has(row.occurrence_id)));
+    },
+    async listPetPhotos(id) {
+      const data = read();
+      found(mine(data.pets, id), "Animal");
+      return copy(data.petPhotos.filter((row) => row.pet_id === id));
+    },
+    async uploadPetPhoto(id, file) { found(mine(read().pets, id), "Animal"); return savePhoto("petPhotos", "pet_id", id, file); },
+    async uploadOccurrencePhoto(id, file) { found(mine(read().occurrences, id), "Alerta"); return savePhoto("occurrencePhotos", "occurrence_id", id, file); },
+    async reusePetPhotosForOccurrence(petId, occurrenceId) {
+      const data = read(); found(mine(data.pets, petId), "Animal"); found(mine(data.occurrences, occurrenceId), "Alerta");
+      const existing = data.occurrencePhotos.filter((row) => row.occurrence_id === occurrenceId);
+      const reused = data.petPhotos.filter((row) => row.pet_id === petId && !existing.some((photo) => photo.storage_path === row.storage_path))
+        .slice(0, Math.max(0, 5 - existing.length)).map((row) => ({ ...row, id: crypto.randomUUID(), occurrence_id: occurrenceId }));
+      data.occurrencePhotos.push(...reused); write(data); return copy(reused);
+    },
+    async downloadPhoto(path) {
+      const data = read();
+      const authorized = data.petPhotos.some((photo) => photo.storage_path === path
+        && data.pets.some((pet) => pet.id === photo.pet_id && pet.owner_id === (currentRole() ? currentId() : null)))
+        || data.occurrencePhotos.some((photo) => photo.storage_path === path
+          && data.occurrences.some((occurrence) => occurrence.id === photo.occurrence_id
+            && (occurrence.visibility === "public" || (currentRole() && occurrence.owner_id === currentId()))));
+      if (!authorized) throw Error("Fotografia não disponível para esta conta.");
+      if (Object.hasOwn(demoPhotos, path)) {
+        const response = await fetch(demoPhotos[path]);
+        if (!response.ok) throw Error("Fotografia de exemplo indisponível.");
+        return response.blob();
+      }
+      const blob = await photoOperation("readonly", (photoStore) => photoStore.get(path));
+      if (!(blob instanceof Blob)) throw Error("Fotografia local indisponível.");
+      return blob;
+    },
+    async setPetCover(id) {
+      const data = read(); const photo = found(data.petPhotos.find((row) => row.id === id && row.uploaded_by === requireSession()), "Fotografia");
+      data.petPhotos.forEach((row) => { if (row.pet_id === photo.pet_id) row.is_cover = row.id === id; });
+      write(data); return copy(photo);
+    },
+    async deletePetPhoto(id) { return removePhoto("petPhotos", id); },
+    async deletePhoto(id) { return removePhoto("occurrencePhotos", id); },
+    async getMyActiveOccurrenceReport(id) {
+      const userId = requireSession();
+      return copy(read().reports.find((row) => row.occurrence_id === id && row.reporter_id === userId
+        && ["open", "in_review"].includes(row.report_status)) || null);
+    },
+    async reportOccurrence(id, category, description) {
+      requireSession();
+      const data = read();
+      found(data.occurrences.find((row) => row.id === id && row.visibility === "public" && row.status === "active"), "Alerta");
+      if (!["false_misleading", "suspected_fraud", "inappropriate_content", "duplicate_occurrence", "misuse_of_information", "other"].includes(category)
+        || typeof description !== "string" || description.trim().length < 10 || description.trim().length > 1000)
+        throw Error("Informe um motivo válido e uma descrição entre 10 e 1.000 caracteres.");
+      const existing = data.reports.find((row) => row.occurrence_id === id && row.reporter_id === requireSession() && ["open", "in_review"].includes(row.report_status));
+      if (existing) return { ...copy(existing), already_active: true };
+      const row = { id: crypto.randomUUID(), occurrence_id: id, reporter_id: requireSession(), category, description: description.trim(), report_status: "open", created_at: new Date().toISOString(), test_record: true };
+      data.reports.push(row); write(data); return copy(row);
+    },
+    async localAdminSnapshot() {
+      requireAdmin();
+      const data = read();
+      return copy({ users: [{ ...SAMPLE_TUTOR, status: data.tutorStatus, test_record: true }, ...data.accounts.map((a) => ({ id: a.id, name: a.name, email: a.email, status: a.status, test_record: true }))], pets: data.pets, occurrences: data.occurrences, reports: data.reports, history: data.adminHistory, sightings: data.sightings, businesses: data.businesses });
+    },
+    async localAdminAction(kind, id, decision, reason) {
+      requireAdmin();
+      const data = read();
+      const explanation = String(reason || "").trim();
+      if (explanation.length < 10 || explanation.length > 500) throw Error("Informe um motivo entre 10 e 500 caracteres.");
+      let row;
+      if (kind === "occurrence") {
+        row = found(data.occurrences.find((item) => item.id === id), "Alerta");
+        if (!["hide", "restore"].includes(decision)) throw Error("Ação inválida.");
+        if ((decision === "hide" && row.visibility !== "public") || (decision === "restore" && row.visibility !== "under_review")) throw Error("Esta ação não se aplica à publicação.");
+        row.visibility = decision === "hide" ? "under_review" : "public";
+      } else if (kind === "report") {
+        row = found(data.reports.find((item) => item.id === id), "Denúncia");
+        if (!["in_review", "resolved", "dismissed"].includes(decision) || !["open", "in_review"].includes(row.report_status)) throw Error("Esta decisão não se aplica à denúncia.");
+        row.report_status = decision;
+        if (decision === "resolved") {
+          const occurrence = found(data.occurrences.find((item) => item.id === row.occurrence_id), "Alerta");
+          occurrence.visibility = "under_review";
+        }
+      } else if (kind === "business") {
+        row = found(data.businesses.find((item) => item.id === id), "Empresa");
+        const next = ({ approve: "approved", reject: "rejected", hide: "rejected" })[decision];
+        if (!next || (row.status === next)) throw Error("Esta decisão não se aplica ao cadastro comercial.");
+        row.status = next; row.review_reason = explanation; row.updated_at = new Date().toISOString();
+      } else if (kind === "user") {
+        if (!["active", "suspended"].includes(decision)) throw Error("Esta ação não se aplica ao usuário.");
+        if (id === USER_ID) {
+          if (data.tutorStatus === decision) throw Error("Esta ação não se aplica ao usuário.");
+          data.tutorStatus = decision;
+        } else {
+          const account = found(data.accounts.find((a) => a.id === id), "Conta");
+          if (account.status === decision) throw Error("Esta ação não se aplica ao usuário.");
+          account.status = decision;
+        }
+        row = { id, status: decision };
+      } else throw Error("Ação administrativa inválida.");
+      const entry = { id: crypto.randomUUID(), kind, target_id: id, decision, reason: explanation, created_at: new Date().toISOString(), actor_name: "Administrador Local", test_record: true };
+      data.adminHistory.unshift(entry); write(data);
+      return copy({ row, entry });
+    },
+  };
+  window.BPAuth = auth;
+  window.BPRemoteStore = Object.freeze(store);
+  window.BPLocalPreview = Object.freeze({ active: true, enter(role = "tutor") {
+    if (!["tutor", "admin"].includes(role)) throw Error("Perfil inválido.");
+    if (role === "tutor" && read().tutorStatus !== "active") throw Error("Esta conta de tutor está desativada.");
+    sessionStorage.setItem(SESSION, role);
+    sessionStorage.setItem(SESSION_ID, role === "admin" ? ADMIN_ID : USER_ID);
+    notify("presentation-account");
+  }, async clear() {
+    await new Promise((resolve, reject) => {
+      const request = indexedDB.deleteDatabase("bp.modern-preview.photos");
+      request.onsuccess = resolve;
+      request.onerror = () => reject(Error("Não foi possível remover as fotos cadastradas."));
+      request.onblocked = () => reject(Error("Feche outras abas do BuscaPet e tente limpar novamente."));
+    });
+    localStorage.setItem(KEY, JSON.stringify({ ...initial(), demoExamplesVersion: 1, careDemoVersion: 1, copyPolishVersion: 1 }));
+    sessionStorage.removeItem(SESSION);
+    sessionStorage.removeItem(SESSION_ID);
+    sessionStorage.removeItem(RESET_ID);
+    sessionStorage.removeItem("bp.real.returnTo");
+    listeners.forEach((listener) => listener(null, { kind: "signed-out", relevant: true, signedOutUserId: USER_ID }));
+  } });
+}

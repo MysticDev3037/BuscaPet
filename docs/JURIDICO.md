@@ -1,6 +1,8 @@
 # Aspectos jurídicos do BuscaPet
 
-Material acadêmico, consultado em 25/09/2026. Não equivale a parecer jurídico nem a declaração de conformidade integral. Os textos em a seção `BPLegal` de `script.js` descrevem esta demonstração local.
+> **Referência histórica ou de evolução futura, não descrição da publicação atual do Projeto Integrador II.** Preserve estas informações como registro técnico da etapa em que foram escritas. Em 24/11/2026 o BuscaPet publicado utiliza armazenamento local no navegador; o dossiê vigente é [Entrega do Projeto Integrador II](ENTREGA_PROJETO_INTEGRADOR_II_2026-11-24.md), com [arquitetura atual](ARQUITETURA.md), [matriz](MATRIZ_RASTREABILIDADE.md) e [testes](TESTES.md). Não pressupor aplicação remota de migrations, segurança RLS homologada, serviços Cloudflare implantados ou testes de backend nesta versão.
+
+Material acadêmico, consultado em 25/09/2026. Não equivale a parecer jurídico nem a declaração de conformidade integral. Os textos em `BPLegal`, definidos em `src/legal.js`, descrevem esta demonstração local.
 
 ## Responsabilidade e termos
 
@@ -43,3 +45,19 @@ O caráter acadêmico, isoladamente, não deve ser apresentado como dispensa uni
 - [CDC, Lei 8.078/1990](https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm), arts. 25 e 51.
 
 Antes da operação pública, confirmar a legislação e a jurisprudência atualizadas e solicitar revisão jurídica das minutas e da operação efetiva.
+
+## Atualização da Sprint 1 — 26/09/2026
+
+A minuta exibida na aplicação passou para a versão 0.3 acadêmica para descrever pistas com foto, revisões, tarefas, colaboradores locais, encerramentos e rascunhos por aba. Esse ajuste documenta o comportamento do protótipo; não constitui parecer jurídico ou validação de conformidade.
+
+Não há mapa real nem diretório de estabelecimentos nesta entrega. A central limita a exibição pela interface, mas dados locais não são protegidos contra a pessoa que controla o navegador. Antes de uso público, implementar os controles de servidor e revisar as bases legais, responsáveis, retenção, comunicação e atendimento aos titulares.
+
+## Atualização do protótipo 0.4 — conta e funções
+
+As telas agora solicitam nome, e-mail e senha para demonstrar cadastro, entrada, verificação e recuperação. Não há provedor de identidade: senha, confirmação e token não são persistidos nem transmitidos, e a interface informa que nenhum e-mail foi enviado. A demonstração não deve receber credenciais ou dados reais.
+
+Os metadados locais distinguem uma identidade de suas funções autorizadas. Tutor e Colaborador podem coexistir; Parceiro permanece em análise; Moderador só existe no seed; Administrador não é concedido. Essa separação não equivale a autorização jurídica ou técnica de servidor. Uma versão pública deverá definir controlador, bases legais, transparência, retenção, atendimento aos titulares, segurança, gestão administrativa de funções e auditoria protegida.
+
+## Refatoração 0.5 — tratamento inalterado
+
+A refatoração não acrescenta coleta, compartilhamento, fornecedor ou finalidade. Chaves e conteúdo persistido permanecem compatíveis. O acesso ao armazenamento e as validações foram centralizados, mas continuam sendo controles locais de um protótipo, sem alterar as limitações jurídicas e técnicas já descritas.
