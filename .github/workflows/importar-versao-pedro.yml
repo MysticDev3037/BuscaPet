@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   importar:
-    if: github.ref == 'refs/heads/pedro/versao-completa' && github.event.head_commit.message == 'chore: preparar copia isolada do BuscaPet'
+    if: github.ref == 'refs/heads/pedro/versao-completa'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout exclusivo da branch do grupo
